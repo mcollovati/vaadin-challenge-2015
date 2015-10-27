@@ -105,6 +105,11 @@
             <artifactId>logback-classic</artifactId>
             <version>1.1.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+        </dependency>
 
         <dependency>
             <groupId>org.vaadin</groupId>
@@ -116,7 +121,22 @@
             <artifactId>watson-api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin</groupId>
+            <artifactId>spinkit</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.easytesting</groupId>
+            <artifactId>fest-reflect</artifactId>
+            <version>1.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>1.6</version>
+        </dependency>
         <!--
           Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory).
 
