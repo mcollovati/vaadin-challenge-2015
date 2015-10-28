@@ -1,8 +1,5 @@
 package org.bluemix.challenge;
 
-import javax.inject.Inject;
-import javax.servlet.annotation.WebServlet;
-
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
@@ -10,21 +7,26 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIViewProvider;
+import com.vaadin.cdi.server.VaadinCDIServlet;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.BootstrapFragmentResponse;
+import com.vaadin.server.BootstrapListener;
+import com.vaadin.server.BootstrapPageResponse;
+import com.vaadin.server.ServiceException;
+import com.vaadin.server.SessionInitEvent;
+import com.vaadin.server.SessionInitListener;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
-import org.slf4j.bridge.SLF4JBridgeHandler;
-import org.vaadin.cdiviewmenu.ViewMenuLayout;
-import org.vaadin.cdiviewmenu.ViewMenuUI;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.vaadin.viewportservlet.ViewPortCDIServlet;
+
+import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 
 /**
  *
@@ -77,7 +79,53 @@ public class MyUI extends UI {
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
-    public static class MyUIServlet extends ViewPortCDIServlet {
+    public static class MyUIServlet extends VaadinCDIServlet {
+
+        @Override
+        protected void servletInitialized() throws ServletException {
+            super.servletInitialized();
+            getService().addSessionInitListener(new SessionInitListener() {
+
+                @Override
+                public void sessionInit(SessionInitEvent event) throws ServiceException {
+                    event.getSession().addBootstrapListener(
+                            new BootstrapListener() {
+
+                                @Override
+                                public void modifyBootstrapFragment(
+                                        BootstrapFragmentResponse response) {
+                                    log("Warning, ViewPortCDIServlet does not support fragments.");
+                                }
+
+                                @Override
+                                public void modifyBootstrapPage(
+                                        BootstrapPageResponse response) {
+                                    // <meta name="viewport" content="user-scalable=no,initial-scale=1.0">
+                                    Document d = response.
+                                            getDocument();
+                                    Element el = d.
+                                            createElement("meta");
+                                    el.attr("name", "viewport");
+                                    el.attr("content",
+                                            getViewPortConfiguration(
+                                                    response));
+                                    d.getElementsByTag(
+                                            "head").get(
+                                            0).appendChild(
+                                            el);
+                                }
+
+                            });
+
+                }
+            });
+
+        }
+
+        protected String getViewPortConfiguration(
+                BootstrapPageResponse response) {
+            return "user-scalable=no,initial-scale=1.0";
+        }
 
     }
 }

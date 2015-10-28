@@ -1,10 +1,10 @@
 package org.bluemix.challenge.ui;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
+import com.google.gwt.thirdparty.guava.common.util.concurrent.FutureCallback;
+import com.google.gwt.thirdparty.guava.common.util.concurrent.Futures;
+import com.google.gwt.thirdparty.guava.common.util.concurrent.ListenableFuture;
+import com.google.gwt.thirdparty.guava.common.util.concurrent.ListeningExecutorService;
+import com.google.gwt.thirdparty.guava.common.util.concurrent.MoreExecutors;
 
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
@@ -27,7 +27,6 @@ import org.vaadin.cdiviewmenu.ViewMenuItem;
 import org.vaadin.spinkit.Spinner;
 import org.vaadin.spinkit.SpinnerType;
 import org.vaadin.viritin.label.RichText;
-import org.vaadin.viritin.layouts.MCssLayout;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 import org.watson.visualrecognition.VisualRecognitionService;
@@ -213,8 +212,8 @@ public class VisualRecognitionView extends MHorizontalLayout implements View {
                         progressMessage.setValue("Uploaded file seems not to be an image. " +
                                 "Detected media type is " + mediaType.toString());
                         progressMessage.setStyleName(ValoTheme.LABEL_FAILURE);
-                        uploadFailed(new Upload.FailedEvent(event.getUpload(),event.getFilename(),
-                                event.getMIMEType(),event.getLength(),
+                        uploadFailed(new Upload.FailedEvent(event.getUpload(), event.getFilename(),
+                                event.getMIMEType(), event.getLength(),
                                 new RuntimeException("Invalid media type " + mediaType)));
                     }
                 }
