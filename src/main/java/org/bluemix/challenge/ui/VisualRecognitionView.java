@@ -90,72 +90,68 @@ public class VisualRecognitionView extends MHorizontalLayout implements View {
         final Upload upload = new Upload("Upload an image (max 5mb)", uploadAndRecognize);
         upload.setWidth("100%");
         upload.setImmediate(true);
+        upload.addChangeListener( e -> {
+            log.debug("Upload on change: {}", e.getFilename());
+            recognitionResults.clearTable();
+            progressMessage.setValue("");
+            progressMessage.removeStyleName(ValoTheme.LABEL_SUCCESS);
+            progressMessage.removeStyleName(ValoTheme.LABEL_FAILURE);
+            uploadProgress.setValue(0f);
+            uploadProgress.setVisible(true);
+        });
         upload.addSucceededListener(uploadAndRecognize);
         upload.addFailedListener(uploadAndRecognize);
-        upload.addStartedListener(new Upload.StartedListener() {
-            @Override
-            public void uploadStarted(Upload.StartedEvent event) {
-                log.debug("Starting upload {}", event.getContentLength());
-                recognitionResults.clearTable();
-                upload.setEnabled(false);
-                progressMessage.setValue("");
-                progressMessage.setStyleName(ValoTheme.LABEL_SUCCESS);
-                if (event.getContentLength() > MAX_UPLOAD_SIZE) {
-                    progressMessage.setValue("File exceedes max upload size. File size is " + FileUtils.byteCountToDisplaySize(event.getContentLength()));
+        upload.addStartedListener(event -> {
+            /*
+            log.debug("Starting upload {}", event.getContentLength());
+            recognitionResults.clearTable();
+            progressMessage.setValue("");
+            progressMessage.setStyleName(ValoTheme.LABEL_SUCCESS);
+            */
+            if (event.getContentLength() > MAX_UPLOAD_SIZE) {
+                progressMessage.setValue("File exceedes max upload size. File size is " + FileUtils.byteCountToDisplaySize(event.getContentLength()));
+                progressMessage.setStyleName(ValoTheme.LABEL_FAILURE);
+                upload.interruptUpload();
+            } else {
+                uploadProgress.setValue(0f);
+                uploadProgress.setVisible(true);
+                uploadProgress.setIndeterminate(event.getContentLength() < 0);
+                log.debug("Started upload, content length is {}", event.getContentLength());
+
+                spinner.setType(SpinnerType.THREE_BOUNCE);
+                spinner.setVisible(true);
+                progressMessage.setValue("Upload started");
+            }
+        });
+        upload.addProgressListener((readBytes, contentLength) -> {
+            boolean isInterrupted = field("interrupted").ofType(boolean.class).in(upload).get();
+
+            if (isInterrupted) {
+                log.debug("Upload is interrupted, do not show progress");
+            } else {
+                log.debug("Uploaded {} of {}", readBytes, contentLength);
+                if (contentLength < 0 && readBytes > MAX_UPLOAD_SIZE) {
+                    progressMessage.setValue("File exceedes max upload size. Actual file size is " + FileUtils.byteCountToDisplaySize(readBytes));
                     progressMessage.setStyleName(ValoTheme.LABEL_FAILURE);
                     upload.interruptUpload();
-                } else {
-                    uploadProgress.setValue(0f);
-                    uploadProgress.setVisible(true);
-                    uploadProgress.setIndeterminate(event.getContentLength() < 0);
-                    log.debug("Started upload, content length is {}", event.getContentLength());
-
-                    spinner.setType(SpinnerType.THREE_BOUNCE);
-                    spinner.setVisible(true);
-                    progressMessage.setValue("Upload started");
+                } else if (contentLength > 0) {
+                    float progress = readBytes / contentLength;
+                    uploadProgress.setValue(progress);
+                    progressMessage.setValue("Uploaded " + FileUtils.byteCountToDisplaySize(readBytes) +
+                            " of " + FileUtils.byteCountToDisplaySize(contentLength));
                 }
             }
         });
-        upload.addProgressListener(new Upload.ProgressListener() {
-            @Override
-            public void updateProgress(long readBytes, long contentLength) {
-                boolean isInterrupted = field("interrupted").ofType(boolean.class).in(upload).get();
-
-                if (isInterrupted) {
-                    log.debug("Upload is interrupted, do not show progress");
-                } else {
-                    log.debug("Uploaded {} of {}", readBytes, contentLength);
-                    if (contentLength < 0 && readBytes > MAX_UPLOAD_SIZE) {
-                        progressMessage.setValue("File exceedes max upload size. Actual file size is " + FileUtils.byteCountToDisplaySize(readBytes));
-                        progressMessage.setStyleName(ValoTheme.LABEL_FAILURE);
-                        upload.interruptUpload();
-                    } else if (contentLength > 0) {
-                        float progress = readBytes / contentLength;
-                        uploadProgress.setValue(progress);
-                        progressMessage.setValue("Uploaded " + FileUtils.byteCountToDisplaySize(readBytes) +
-                                " of " + FileUtils.byteCountToDisplaySize(contentLength));
-                    }
-                }
-            }
-        });
-        upload.addFinishedListener(new Upload.FinishedListener() {
-            @Override
-            public void uploadFinished(Upload.FinishedEvent event) {
-                log.debug("Upload finished");
-                upload.setEnabled(true);
-            }
+        upload.addFinishedListener(event -> {
+            log.debug("Upload finished");
+            upload.setEnabled(true);
         });
 
         uploadedImage.addStyleName("uploaded-image-preview");
         uploadedImage.setVisible(false);
         uploadedImage.setWidth(100, Unit.PERCENTAGE);
 
-        addDetachListener(new DetachListener() {
-            @Override
-            public void detach(DetachEvent event) {
-                uploadAndRecognize.clear();
-            }
-        });
+        addDetachListener(event -> uploadAndRecognize.clear());
 
 
         recognitionResults.setSizeFull();
@@ -227,37 +223,26 @@ public class VisualRecognitionView extends MHorizontalLayout implements View {
                 progressMessage.setValue("Upload completed. Starting visual recognition");
                 spinner.setType(SpinnerType.CUBE_GRID);
                 log.debug("Starting recognition");
-                ListenableFuture<org.watson.visualrecognition.response.Image> f = executor.submit(new Callable<org.watson.visualrecognition.response.Image>() {
-                    @Override
-                    public org.watson.visualrecognition.response.Image call() throws Exception {
-                        return service.recognize(Files.readAllBytes(uploadedFile.toPath()));
-                    }
-                });
+                ListenableFuture<org.watson.visualrecognition.response.Image> f = executor.submit(() -> service.recognize(Files.readAllBytes(uploadedFile.toPath())));
                 Futures.addCallback(f, new FutureCallback<org.watson.visualrecognition.response.Image>() {
                     @Override
                     public void onSuccess(final org.watson.visualrecognition.response.Image result) {
                         log.debug("Visual recognition succeeded");
-                        getUI().access(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressMessage.setValue("Recognition completed successfully");
-                                recognitionResults.withImageResponse(result);
-                                spinner.setVisible(false);
-                                //info.withMarkDown(VisualRecognitionView.this.getClass().getResourceAsStream("done.md"));
-                            }
+                        getUI().access(() -> {
+                            progressMessage.setValue("Recognition completed successfully");
+                            recognitionResults.withImageResponse(result);
+                            spinner.setVisible(false);
+                            //info.withMarkDown(VisualRecognitionView.this.getClass().getResourceAsStream("done.md"));
                         });
                     }
 
                     @Override
                     public void onFailure(final Throwable t) {
                         log.error("Visual recognition failed", t);
-                        getUI().access(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressMessage.setValue("Cannot perform visual recognition: " + t.getMessage());
-                                progressMessage.setStyleName(ValoTheme.LABEL_FAILURE);
-                                spinner.setVisible(false);
-                            }
+                        getUI().access(() -> {
+                            progressMessage.setValue("Cannot perform visual recognition: " + t.getMessage());
+                            progressMessage.setStyleName(ValoTheme.LABEL_FAILURE);
+                            spinner.setVisible(false);
                         });
                     }
                 });

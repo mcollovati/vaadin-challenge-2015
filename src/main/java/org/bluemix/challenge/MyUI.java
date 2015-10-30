@@ -1,8 +1,5 @@
 package org.bluemix.challenge;
 
-import javax.inject.Inject;
-import javax.servlet.annotation.WebServlet;
-
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
@@ -10,21 +7,25 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIViewProvider;
+import com.vaadin.cdi.server.VaadinCDIServletService;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.DeploymentConfiguration;
+import com.vaadin.server.RequestHandler;
+import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.server.VaadinServletService;
+import com.vaadin.server.communication.FileUploadHandler;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
-import org.slf4j.bridge.SLF4JBridgeHandler;
-import org.vaadin.cdiviewmenu.ViewMenuLayout;
-import org.vaadin.cdiviewmenu.ViewMenuUI;
+import org.bluemix.challenge.ui.AsyncFileUploadHandler;
 import org.vaadin.viewportservlet.ViewPortCDIServlet;
+
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.servlet.annotation.WebServlet;
 
 /**
  *
@@ -62,7 +63,7 @@ public class MyUI extends UI {
      * Workaround for issue 1, related to vaadin issues: 13566, 14884
      *
      * @param navigationState the view id that was requested
-     * @param e the exception thrown by Navigator
+     * @param e               the exception thrown by Navigator
      */
     protected void handleNavigationError(String navigationState, Exception e) {
         Notification.show(
@@ -79,5 +80,25 @@ public class MyUI extends UI {
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
     public static class MyUIServlet extends ViewPortCDIServlet {
 
+        @Override
+        protected VaadinServletService createServletService(
+                DeploymentConfiguration deploymentConfiguration)
+                throws ServiceException {
+            VaadinCDIServletService service = new VaadinCDIServletService(this, deploymentConfiguration) {
+                @Override
+                protected List<RequestHandler> createRequestHandlers() throws ServiceException {
+                    List<RequestHandler> handlers = super.createRequestHandlers();
+                    handlers.replaceAll(r -> {
+                        if (r instanceof FileUploadHandler) {
+                            return new AsyncFileUploadHandler();
+                        }
+                        return r;
+                    });
+                    return handlers;
+                }
+            };
+            service.init();
+            return service;
+        }
     }
 }
