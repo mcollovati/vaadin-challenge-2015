@@ -1539,6 +1539,18 @@ div.v-layout.v-horizontal.v-widget {
 	vertical-align: top;
 }
 
+.view-out {
+	-webkit-animation: valo-animate-in-slide-left 400ms backwards;
+	-moz-animation: valo-animate-in-slide-left 400ms backwards;
+	animation: valo-animate-in-slide-left 400ms backwards;
+}
+
+.view-in {
+	-webkit-animation: valo-animate-in-slide-right 400ms backwards;
+	-moz-animation: valo-animate-in-slide-right 400ms backwards;
+	animation: valo-animate-in-slide-right 400ms backwards;
+}
+
 @-webkit-keyframes sk-rotatePlane {
 		0% {
 		transform: perspective(120px) rotateX(0deg) rotateY(0deg);
@@ -13363,4 +13375,21 @@ div.v-layout.v-horizontal.v-widget {
 	display: inline-block;
 	width: 19px;
 	overflow: hidden;
+}
+
+.mytheme .v-ui {
+	background-color: white;
+}
+
+.mytheme .upload-drop-zone {
+	border-width: 5px;
+	border-style: dashed;
+}
+
+.mytheme .upload-drop-zone .v-panel-content {
+	padding: 2em;
+}
+
+.mytheme .upload-drop-zone .v-panel-content .v-label {
+	text-align: center;
 }

@@ -81,6 +81,13 @@ public class AsyncFileUploadHandler extends FileUploadHandler {
                     }
             );
 
+            CompletableFuture.runAsync( () -> {
+                try {
+                    AsyncFileUploadHandler.super.doHandleSimpleMultipartFileUpload(session, vaadinRequest, response, streamVariable, variableName, owner, boundary);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
             inputStream.setReadListener(
 
@@ -89,24 +96,12 @@ public class AsyncFileUploadHandler extends FileUploadHandler {
 
                         byte[] buffer = new byte[MAX_UPLOAD_BUFFER_SIZE];
 
-                        CompletableFuture future;
-
-
                         @Override
                         public void onDataAvailable() throws IOException {
                             log.debug("Reading request");
                             int len = -1;
                             while (inputStream.isReady() && (len = inputStream.read(buffer)) >= 0) {
-                                pos.write(buffer, 0 , len);
-                                if (future == null) {
-                                    future = CompletableFuture.runAsync( () -> {
-                                        try {
-                                            AsyncFileUploadHandler.super.doHandleSimpleMultipartFileUpload(session, vaadinRequest, response, streamVariable, variableName, owner, boundary);
-                                        } catch (IOException e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                    }).whenComplete( (o,t) -> asyncContext.complete() );
-                                }
+                                pos.write(buffer, 0, len);
                             }
 
                         }

@@ -32,5 +32,31 @@
 @mixin mytheme {
   @include valo;
 
+  .v-ui {
+    background-color: white;
+  }
+
   // Insert your own theme rules here
+  .upload-drop-zone {
+
+      border-width: 5px;
+      border-style: dashed;
+      .v-panel-content {
+
+        padding: 2em;
+
+        .v-label {
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  .view-out {
+    @include valo-animate-in-slide-left;
+  }
+  .view-in {
+    @include valo-animate-in-slide-right;
+  }
+
 }

@@ -30,6 +30,5 @@ public class VisualRecognitionTable extends MTable<Label> {
 
     public void clearTable() {
         super.setBeans();
-
     }
 }
