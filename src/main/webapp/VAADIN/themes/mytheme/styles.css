@@ -1539,18 +1539,6 @@ div.v-layout.v-horizontal.v-widget {
 	vertical-align: top;
 }
 
-.view-out {
-	-webkit-animation: valo-animate-in-slide-left 400ms backwards;
-	-moz-animation: valo-animate-in-slide-left 400ms backwards;
-	animation: valo-animate-in-slide-left 400ms backwards;
-}
-
-.view-in {
-	-webkit-animation: valo-animate-in-slide-right 400ms backwards;
-	-moz-animation: valo-animate-in-slide-right 400ms backwards;
-	animation: valo-animate-in-slide-right 400ms backwards;
-}
-
 @-webkit-keyframes sk-rotatePlane {
 		0% {
 		transform: perspective(120px) rotateX(0deg) rotateY(0deg);
@@ -13377,19 +13365,73 @@ div.v-layout.v-horizontal.v-widget {
 	overflow: hidden;
 }
 
+.mytheme .v-label-failure {
+	overflow-wrap: break-word;
+}
+
+.mytheme .v-button.breadcrumb-btn:after {
+	border-top: 17px solid transparent;
+	border-bottom: 17px solid transparent;
+	border-left: 10px solid #fafafa;
+	top: 50%;
+	margin-top: -17px;
+	margin-left: 1px;
+	left: 100%;
+	z-index: 3;
+}
+
 .mytheme .v-ui {
 	background-color: white;
 }
 
-.mytheme .upload-drop-zone {
+.mytheme .v-ui .content-layout .v-horizontallayout-two-columns {
+	height: auto !important;
+}
+
+.mytheme .v-ui[height-range~="0-360"] .main-layout {
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.mytheme .v-ui[width-range~="0-640"] .main-layout {
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.mytheme .v-ui[width-range~="0-640"] .content-layout .v-horizontallayout-two-columns  > .v-expand > .v-slot {
+	width: 100% !important;
+	height: auto !important;
+	display: block !important;
+	margin-left: 0 !important;
+}
+
+.mytheme .v-ui[width-range~="0-640"] .content-layout .v-horizontallayout-two-columns .upload-container {
+	padding: 0;
+}
+
+.mytheme .v-ui .upload-drop-zone {
 	border-width: 5px;
 	border-style: dashed;
 }
 
-.mytheme .upload-drop-zone .v-panel-content {
-	padding: 2em;
+.mytheme .v-ui .upload-drop-zone .v-panel-content {
+	padding: 3em;
 }
 
-.mytheme .upload-drop-zone .v-panel-content .v-label {
+.mytheme .v-ui .upload-drop-zone .v-panel-content .v-label {
 	text-align: center;
+}
+
+.mytheme .view-out {
+	-webkit-animation: valo-animate-in-slide-left 400ms backwards;
+	-moz-animation: valo-animate-in-slide-left 400ms backwards;
+	animation: valo-animate-in-slide-left 400ms backwards;
+}
+
+.mytheme .view-in {
+	-webkit-animation: valo-animate-in-slide-right 400ms backwards;
+	-moz-animation: valo-animate-in-slide-right 400ms backwards;
+	animation: valo-animate-in-slide-right 400ms backwards;
 }

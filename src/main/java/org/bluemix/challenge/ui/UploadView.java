@@ -21,7 +21,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamVariable;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.Label;
@@ -40,6 +39,7 @@ import org.vaadin.cdiviewmenu.ViewMenuItem;
 import org.vaadin.spinkit.Spinner;
 import org.vaadin.spinkit.SpinnerType;
 import org.vaadin.viritin.label.RichText;
+import org.vaadin.viritin.layouts.MCssLayout;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
@@ -64,10 +64,10 @@ import static org.fest.reflect.core.Reflection.field;
  */
 @Slf4j
 @CDIView(UploadView.VIEW_NAME)
-@ViewMenuItem(title = "Upload image",icon = FontAwesome.UPLOAD)
+@ViewMenuItem(title = "Upload image",icon = FontAwesome.UPLOAD,order = 1)
 public class UploadView extends MHorizontalLayout implements View {
 
-    public static final String VIEW_NAME = "";
+    public static final String VIEW_NAME = "step-1";
 
     @Inject
     private javax.enterprise.event.Event<UploadStartedEvent> uploadStartedEventEvent;
@@ -81,10 +81,13 @@ public class UploadView extends MHorizontalLayout implements View {
     private final ProgressBar uploadProgress = new ProgressBar();
     private final UploadAndRecognize uploadAndRecognize = new UploadAndRecognize();
 
+
     @PostConstruct
     void initView() {
         setSizeFull();
+        //withFullWidth();
         setMargin(true);
+        addStyleName("two-columns");
 
         uploadProgress.setVisible(false);
         uploadProgress.setWidth(100, Unit.PERCENTAGE);
@@ -93,8 +96,10 @@ public class UploadView extends MHorizontalLayout implements View {
         spinner.addStyleName("wait-job");
         spinner.setVisible(false);
 
-        info.setSizeFull();
+        //info.setSizeFull();
+        info.setWidth(100,Unit.PERCENTAGE);
         info.withMarkDown(getClass().getResourceAsStream("start.md"));
+
 
 
         final CustomUpload upload = new CustomUpload("Upload an image (max 5mb)", uploadAndRecognize);
@@ -115,6 +120,9 @@ public class UploadView extends MHorizontalLayout implements View {
                 progressMessage.setStyleName(ValoTheme.LABEL_FAILURE);
                 upload.interruptUpload();
             } else {
+
+                UploadView.this.addStyleName("upload-started");
+
                 uploadProgress.setValue(0f);
                 uploadProgress.setVisible(true);
                 uploadProgress.setIndeterminate(event.getContentLength() < 0);
@@ -150,21 +158,19 @@ public class UploadView extends MHorizontalLayout implements View {
             log.debug("Upload finished");
             upload.setEnabled(true);
             uploadProgress.setVisible(false);
+            UploadView.this.removeStyleName("upload-started");
         });
 
-        Label dropFileLabel = new Label("or drop a file here");
-        dropFileLabel.setStyleName(ValoTheme.LABEL_LARGE);
-        Panel dropFilePanel = new Panel(dropFileLabel);
-        dropFilePanel.setStyleName("upload-drop-zone");
-        dropFilePanel.addStyleName(ValoTheme.PANEL_WELL);
-        DragAndDropWrapper dropZone = createFileDrop(dropFilePanel, upload);
+        DragAndDropWrapper dropZone = createFileDrop(upload);
 
 
         add(info, new MVerticalLayout(upload, dropZone, uploadProgress, progressMessage, spinner)
+                        .withStyleName("upload-container")
                         .withFullHeight().withFullWidth()
                         .expand(new CssLayout())
                         .alignAll(Alignment.MIDDLE_CENTER)
         );
+
     }
 
     private void resetIndicators() {
@@ -224,8 +230,8 @@ public class UploadView extends MHorizontalLayout implements View {
             }
 
             if (isImage) {
-                uploadCompletedEventEvent.fire(new UploadCompletedEvent(uploadedFile));
                 getUI().getNavigator().navigateTo(RecognitionView.VIEW_NAME);
+                uploadCompletedEventEvent.fire(new UploadCompletedEvent(uploadedFile));
             }
         }
 
@@ -261,8 +267,15 @@ public class UploadView extends MHorizontalLayout implements View {
         }
     }
 
-    private DragAndDropWrapper createFileDrop(Component wrapped, CustomUpload upload) {
-        DragAndDropWrapper dnd = new DragAndDropWrapper(wrapped);
+    private DragAndDropWrapper createFileDrop(CustomUpload upload) {
+        Label dropFileLabel = new Label("or drop a file here");
+        dropFileLabel.setStyleName(ValoTheme.LABEL_LARGE);
+        Panel dropFilePanel = new Panel(dropFileLabel);
+        dropFilePanel.setStyleName("upload-drop-zone");
+        dropFilePanel.addStyleName(ValoTheme.PANEL_WELL);
+
+
+        DragAndDropWrapper dnd = new DragAndDropWrapper(dropFilePanel);
         dnd.setDropHandler(new DropHandler() {
             @Override
             public void drop(DragAndDropEvent event) {

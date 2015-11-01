@@ -19,6 +19,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -31,6 +32,7 @@ import org.vaadin.cdiviewmenu.ViewMenuItem;
 import org.vaadin.spinkit.Spinner;
 import org.vaadin.spinkit.SpinnerType;
 import org.vaadin.viritin.label.RichText;
+import org.vaadin.viritin.layouts.MCssLayout;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
@@ -47,39 +49,52 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @CDIView(RecognitionView.VIEW_NAME)
-@ViewMenuItem(title = "Image recognition", icon = FontAwesome.EYE)
+@ViewMenuItem(title = "Image recognition", icon = FontAwesome.EYE, order = 2)
 public class RecognitionView extends MHorizontalLayout implements View {
 
-    public static final String VIEW_NAME = "recognition";
+    public static final String VIEW_NAME = "step-2";
 
     @Inject
     private ServicesFacade services;
 
     private final RichText info = new RichText();
     private final VisualRecognitionTable recognitionResults = new VisualRecognitionTable();
-    private final Image uploadedImage = new Image("");
+    private final Image uploadedImage = new Image("Image to analyze");
     private final Label message = new Label();
     private final Spinner spinner = new Spinner(SpinnerType.CUBE_GRID);
 
 
     @PostConstruct
     void initView() {
+        setMargin(true);
+        setSizeFull();
+        addStyleName("two-columns");
+
         message.setWidth(100, Unit.PERCENTAGE);
         message.setValue("Visual recognition in progress");
-        message.setStyleName(ValoTheme.LABEL_COLORED);
+        message.setStyleName("progress-message");
+        message.addStyleName(ValoTheme.LABEL_COLORED);
+
+        uploadedImage.setWidth(100, Unit.PERCENTAGE);
 
         spinner.setVisible(false);
+        recognitionResults.setVisible(false);
 
         info.setSizeFull();
         info.withMarkDown(getClass().getResourceAsStream("recognition.md"));
-        withFullHeight().withFullWidth().expand(
-                new MVerticalLayout(info)
+
+
+        add(new MVerticalLayout(info)
+                        .withMargin(false)
                         .withFullHeight().withFullWidth()
                         .alignAll(Alignment.TOP_CENTER)
                         .expand(uploadedImage),
                 new MVerticalLayout(message, spinner).withFullHeight().withFullWidth()
+                        .withMargin(false)
+                        .alignAll(Alignment.TOP_CENTER)
                         .expand(recognitionResults)
         );
+
     }
 
     @Override
@@ -88,9 +103,12 @@ public class RecognitionView extends MHorizontalLayout implements View {
     }
 
     public void onUploadStarted(@Observes UploadStartedEvent event) {
-        uploadedImage.setVisible(false);
-        uploadedImage.setSource(null);
-        spinner.setVisible(false);
+        UI.getCurrent().access(() -> {
+            uploadedImage.setVisible(false);
+            uploadedImage.setSource(null);
+            spinner.setVisible(false);
+            recognitionResults.setVisible(false);
+        });
     }
 
     public void onRecognitionSucceded(@Observes RecognitionSuccededEvent event) {
@@ -99,6 +117,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
             message.setValue("Recognition completed successfully");
             message.setStyleName(ValoTheme.LABEL_SUCCESS);
             recognitionResults.withImageResponse(event.getRecognitionResults());
+            recognitionResults.setVisible(true);
         });
     }
 
@@ -107,15 +126,18 @@ public class RecognitionView extends MHorizontalLayout implements View {
             spinner.setVisible(false);
             message.setValue("Cannot perform visual recognition: " + event.getReason().getMessage());
             message.setStyleName(ValoTheme.LABEL_FAILURE);
+            recognitionResults.setVisible(false);
         });
     }
 
     public void onImageUploaded(@Observes UploadCompletedEvent event) {
-        uploadedImage.setSource(new FileResource(event.getUploadedImage()));
-        uploadedImage.setVisible(true);
-        message.setValue("Upload completed. Starting visual recognition");
-        message.setStyleName(ValoTheme.LABEL_SUCCESS);
-        spinner.setVisible(true);
+        UI.getCurrent().access(() -> {
+            uploadedImage.setSource(new FileResource(event.getUploadedImage()));
+            uploadedImage.setVisible(true);
+            message.setValue("Upload completed. Starting visual recognition");
+            message.setStyleName(ValoTheme.LABEL_SUCCESS);
+            spinner.setVisible(true);
+        });
         doRecognition(event.getUploadedImage());
     }
 

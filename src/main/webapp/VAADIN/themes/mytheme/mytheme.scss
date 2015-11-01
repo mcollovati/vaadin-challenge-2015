@@ -29,11 +29,64 @@
 
 @import "../valo/valo.scss";
 
+
 @mixin mytheme {
   @include valo;
 
+  .v-label-failure {
+    overflow-wrap: break-word;
+  }
+
+  .v-button.breadcrumb-btn:after {
+    border-top: 17px solid transparent;
+    border-bottom: 17px solid transparent;
+    border-left: 10px solid $v-background-color;
+    top: 50%;
+    margin-top: -17px;
+    margin-left: 1px;
+    left: 100%;
+    z-index: 3;
+  }
+
   .v-ui {
     background-color: white;
+
+    .content-layout .v-horizontallayout-two-columns {
+      height: auto !important;
+    }
+
+    @include height-range(0,360){
+      .main-layout {
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+    }
+
+    @include width-range(0,640){
+      .main-layout {
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+    /*}
+
+    @include width-range(0,360){
+    */
+
+      .content-layout .v-horizontallayout-two-columns {
+        > .v-expand > .v-slot {
+          width: 100% !important;
+          height: auto !important;
+          display: block !important;
+          margin-left: 0 !important;
+        }
+
+        .upload-container {
+          padding: 0;
+        }
+      }
+
   }
 
   // Insert your own theme rules here
@@ -43,7 +96,7 @@
       border-style: dashed;
       .v-panel-content {
 
-        padding: 2em;
+        padding: 3em;
 
         .v-label {
           text-align: center;
@@ -58,5 +111,7 @@
   .view-in {
     @include valo-animate-in-slide-right;
   }
+
+
 
 }

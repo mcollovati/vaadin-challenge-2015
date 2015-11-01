@@ -9,6 +9,7 @@ import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.server.VaadinCDIServletService;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.DeploymentConfiguration;
@@ -18,19 +19,26 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.communication.FileUploadHandler;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 import org.bluemix.challenge.ui.AsyncFileUploadHandler;
+import org.bluemix.challenge.ui.Breadcrumb;
+import org.bluemix.challenge.ui.ErrorView;
+import org.bluemix.challenge.ui.RecognitionView;
 import org.bluemix.challenge.ui.UploadView;
 import org.vaadin.viewportservlet.ViewPortCDIServlet;
+import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MCssLayout;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.util.List;
 
+import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.servlet.annotation.WebServlet;
 
@@ -51,15 +59,16 @@ public class MyUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-        MCssLayout contentLayout = new MCssLayout();
-        contentLayout.setStyleName(ValoTheme.LAYOUT_WELL);
+        //MCssLayout contentLayout = new MCssLayout();
+        Panel contentLayout = new Panel();
+        contentLayout.setStyleName("content-layout");
+        contentLayout.addStyleName(ValoTheme.LAYOUT_WELL);
         contentLayout.setSizeFull();
 
-        MHorizontalLayout breadcrumb = new MHorizontalLayout()
-                .withFullWidth();
+        Layout breadcrumb = new Breadcrumb();
 
         MVerticalLayout mainLayout = new MVerticalLayout(breadcrumb)
-                .expand(contentLayout);
+                .expand(contentLayout).withStyleName("main-layout");
         mainLayout.setSizeFull();
         Navigator navigator = new Navigator(this, contentLayout) {
 
@@ -91,6 +100,7 @@ public class MyUI extends UI {
             }
         });
         navigator.addProvider(viewProvider);
+        navigator.setErrorView(new ErrorView());
         setContent(mainLayout);
 
         getSession().setErrorHandler(event -> {
