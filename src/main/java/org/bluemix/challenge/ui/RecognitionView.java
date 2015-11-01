@@ -59,7 +59,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
 
     private final RichText info = new RichText();
     private final VisualRecognitionTable recognitionResults = new VisualRecognitionTable();
-    private final Image uploadedImage = new Image("Image to analyze");
+    private final Image uploadedImage = new Image();
     private final Label message = new Label();
     private final Spinner spinner = new Spinner(SpinnerType.CUBE_GRID);
 
@@ -79,6 +79,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
 
         spinner.setVisible(false);
         recognitionResults.setVisible(false);
+        recognitionResults.setSizeFull();
 
         info.setSizeFull();
         info.withMarkDown(getClass().getResourceAsStream("recognition.md"));
