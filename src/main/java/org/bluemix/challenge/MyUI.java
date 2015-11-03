@@ -65,7 +65,7 @@ public class MyUI extends UI {
         contentLayout.addStyleName(ValoTheme.LAYOUT_WELL);
         contentLayout.setSizeFull();
 
-        Layout breadcrumb = new Breadcrumb();
+        Breadcrumb breadcrumb = new Breadcrumb();
 
         MVerticalLayout mainLayout = new MVerticalLayout(breadcrumb)
                 .expand(contentLayout).withStyleName("main-layout");
@@ -82,23 +82,7 @@ public class MyUI extends UI {
             }
 
         };
-        navigator.addViewChangeListener(new ViewChangeListener() {
-            @Override
-            public boolean beforeViewChange(ViewChangeEvent event) {
-                if (event.getOldView() instanceof Component) {
-                    ((Component)event.getOldView()).addStyleName("view-out");
-                }
-                return true;
-            }
-
-            @Override
-            public void afterViewChange(ViewChangeEvent event) {
-                if (event.getNewView() instanceof Component) {
-                    ((Component)event.getNewView()).addStyleName("view-in");
-                }
-
-            }
-        });
+        navigator.addViewChangeListener(breadcrumb);
         navigator.addProvider(viewProvider);
         navigator.setErrorView(new ErrorView());
         setContent(mainLayout);

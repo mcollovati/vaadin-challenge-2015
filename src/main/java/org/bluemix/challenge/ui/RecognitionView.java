@@ -52,7 +52,7 @@ import lombok.extern.slf4j.Slf4j;
 @ViewMenuItem(title = "Image recognition", icon = FontAwesome.EYE, order = 2)
 public class RecognitionView extends MHorizontalLayout implements View {
 
-    public static final String VIEW_NAME = "step-2";
+    public static final String VIEW_NAME = "recognition";
 
     @Inject
     private ServicesFacade services;
@@ -79,9 +79,9 @@ public class RecognitionView extends MHorizontalLayout implements View {
 
         spinner.setVisible(false);
         recognitionResults.setVisible(false);
-        recognitionResults.setSizeFull();
 
-        info.setSizeFull();
+
+        //info.setSizeFull();
         info.withMarkDown(getClass().getResourceAsStream("recognition.md"));
 
 
@@ -95,6 +95,8 @@ public class RecognitionView extends MHorizontalLayout implements View {
                         .alignAll(Alignment.TOP_CENTER)
                         .expand(recognitionResults)
         );
+        recognitionResults.setWidth(100,Unit.PERCENTAGE);
+        recognitionResults.setHeightUndefined();
 
     }
 

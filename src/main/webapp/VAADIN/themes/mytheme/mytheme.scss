@@ -37,15 +37,84 @@
     overflow-wrap: break-word;
   }
 
-  .v-button.breadcrumb-btn:after {
-    border-top: 17px solid transparent;
-    border-bottom: 17px solid transparent;
-    border-left: 10px solid $v-background-color;
-    top: 50%;
-    margin-top: -17px;
-    margin-left: 1px;
-    left: 100%;
-    z-index: 3;
+  .error-view {
+    text-align: center;
+
+    .v-label * {
+        text-align: center;
+    }
+  }
+
+
+  $v-unit-size: 38px;
+  $v-bevel: none;
+  $v-shadow: none;
+  $v-gradient: false;
+
+  @include valo-button($primary-stylename: breadcrumb-btn) {
+
+    &:not(:last-child) {
+        border-right: 0;
+    }
+
+
+  }
+  .breadcrumb-btn:focus:after {
+      box-shadow: none !important;
+  }
+
+  .breadcrumb-btn-spacer {
+    $breadcrumb-unit-size: 38px;
+
+    border-left: 0;
+    padding: 0 !important;
+    min-width: 0 !important;
+
+
+    &.breadcrumb-btn-friendly:before {
+      border-left: valo-border($border: 10px solid, $color: $v-friendly-color);
+    }
+    &.breadcrumb-btn-friendly:after {
+      border-left: valo-border($border: 10px solid $v-friendly-color);
+    }
+    &.breadcrumb-btn-primary:before {
+      border-left: valo-border($border: 10px solid, $color: $v-selection-color);
+    }
+    &.breadcrumb-btn-primary:after {
+      border-left: valo-border($border: 10px solid $v-selection-color);
+    }
+
+    &:focus:after {
+        box-shadow: none !important;
+    }
+
+    &:before {
+      position: absolute;
+      margin-left: 1px;
+    }
+    &:after {
+      border-left: 10px solid transparent;
+    }
+
+    &:before,
+    &:after {
+      border-top: ($breadcrumb-unit-size / 2) solid transparent !important;
+      border-bottom: ($breadcrumb-unit-size / 2) solid transparent !important;
+      border-right: 0 !important;
+      margin-top: ($breadcrumb-unit-size / 2) * -1;
+      top: 50%;
+      left: 0%;
+      z-index: 10;
+      height: 0 !important;
+      width: 0 !important;
+      content: "";
+      display: inline-block !important;
+    }
+
+    &.v-disabled {
+        opacity: 1 !important;
+    }
+
   }
 
   .v-ui {
@@ -69,10 +138,6 @@
         padding-left: 10px;
         padding-right: 10px;
       }
-    /*}
-
-    @include width-range(0,360){
-    */
 
       .content-layout .v-horizontallayout-two-columns {
         > .v-expand > .v-slot {
@@ -109,7 +174,7 @@
     @include valo-animate-in-slide-left;
   }
   .view-in {
-    @include valo-animate-in-slide-right;
+    @include valo-animate-in-slide-right($delay: 400ms);
   }
 
 
