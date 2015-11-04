@@ -319,6 +319,8 @@
                 <repository>
                     <id>project.local</id>
                     <url>file:${project.basedir}/unmanged-repo</url>
+                    <releases><enabled>false</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
                 </repository>
             </repositories>
         </profile>
