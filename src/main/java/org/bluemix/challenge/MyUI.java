@@ -92,7 +92,7 @@ public class MyUI extends UI {
             Throwable t = DefaultErrorHandler.findRelevantThrowable(event.getThrowable());
             Notification.show("Ooops! Something went wrong", t.getMessage(), Notification.Type.ERROR_MESSAGE);
         });
-        navigator.navigateTo(UploadView.VIEW_NAME);
+        navigator.navigateTo(getNavigator().getState());
         setResponsive(true);
     }
 

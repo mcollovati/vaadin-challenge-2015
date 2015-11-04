@@ -67,7 +67,7 @@ import static org.fest.reflect.core.Reflection.field;
 @ViewMenuItem(title = "Upload image",icon = FontAwesome.UPLOAD,order = 1)
 public class UploadView extends MHorizontalLayout implements View {
 
-    public static final String VIEW_NAME = "upload";
+    public static final String VIEW_NAME = "";
 
     @Inject
     private javax.enterprise.event.Event<UploadStartedEvent> uploadStartedEventEvent;

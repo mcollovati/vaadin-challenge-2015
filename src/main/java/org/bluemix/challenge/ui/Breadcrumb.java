@@ -65,7 +65,8 @@ public class Breadcrumb extends MCssLayout implements ViewChangeListener {
         viewIndex.ifPresent( idx -> {
             toggleButtonsState(idx);
             if (event.getOldView() instanceof Component) {
-                ((Component)event.getOldView()).addStyleName("view-out");
+                ((Component)event.getOldView()).removeStyleName("view-in");
+                ((Component)event.getOldView()).setStyleName("view-out");
             }
         });
         return canChange;
@@ -75,6 +76,10 @@ public class Breadcrumb extends MCssLayout implements ViewChangeListener {
     public void afterViewChange(ViewChangeEvent event) {
         currentView = event.getViewName();
         if (event.getNewView() instanceof Component) {
+            Optional.ofNullable(event.getOldView())
+                    .filter( o -> o instanceof Component)
+                    .map( o -> (Component)o)
+                    .ifPresent( c -> c.removeStyleName("view-out") );
             ((Component)event.getNewView()).addStyleName("view-in");
         }
     }
