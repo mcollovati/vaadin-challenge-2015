@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata modelVersion="1.1.0">
-  <groupId>org.vaadin</groupId>
-  <artifactId>spinkit</artifactId>
+  <groupId>org.vaadin.watson</groupId>
+  <artifactId>watson-api</artifactId>
   <version>1.0-SNAPSHOT</version>
   <versioning>
     <snapshot>
-      <timestamp>20151104.210704</timestamp>
-      <buildNumber>2</buildNumber>
+      <timestamp>20151104.210628</timestamp>
+      <buildNumber>1</buildNumber>
     </snapshot>
-    <lastUpdated>20151104210704</lastUpdated>
+    <lastUpdated>20151104210628</lastUpdated>
     <snapshotVersions>
       <snapshotVersion>
         <extension>jar</extension>
-        <value>1.0-20151104.210704-2</value>
-        <updated>20151104210704</updated>
+        <value>1.0-20151104.210628-1</value>
+        <updated>20151104210628</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>pom</extension>
-        <value>1.0-20151104.210704-2</value>
-        <updated>20151104210704</updated>
+        <value>1.0-20151104.210628-1</value>
+        <updated>20151104210628</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>
