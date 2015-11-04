@@ -306,7 +306,7 @@
                                 <configuration>
                                     <tasks>
                                         <copy todir="${project.build.directory}">
-                                            <fileset dir="src/main/docker" includes="**/*" />
+                                            <fileset dir="src/main/docker" includes="**/*"/>
                                         </copy>
                                     </tasks>
                                 </configuration>
@@ -318,9 +318,14 @@
             <repositories>
                 <repository>
                     <id>project.local</id>
-                    <url>file:${project.basedir}/unmanged-repo</url>
-                    <releases><enabled>false</enabled></releases>
-                    <snapshots><enabled>true</enabled></snapshots>
+                    <url>file:${project.basedir}/unmanaged-repo</url>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </snapshots>
                 </repository>
             </repositories>
         </profile>
