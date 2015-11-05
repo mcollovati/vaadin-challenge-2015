@@ -117,6 +117,7 @@ public class MyUI extends UI {
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
     public static class MyUIServlet extends ViewPortCDIServlet {
 
+        /*
         @Override
         protected VaadinServletService createServletService(
                 DeploymentConfiguration deploymentConfiguration)
@@ -136,6 +137,6 @@ public class MyUI extends UI {
             };
             service.init();
             return service;
-        }
+        }*/
     }
 }
