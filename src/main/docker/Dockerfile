@@ -1,4 +1,4 @@
-FROM registry.eu-gb.bluemix.net/ibmliberty
+FROM registry.eu-gb.bluemix.net/mcvd/websphere-liberty:webProfile7
 EXPOSE 9080
 EXPOSE 22
 EXPOSE 80
