@@ -67,7 +67,7 @@ import static org.fest.reflect.core.Reflection.field;
 @ViewMenuItem(title = "Upload image",icon = FontAwesome.UPLOAD,order = 1)
 public class UploadView extends MHorizontalLayout implements View {
 
-    public static final String VIEW_NAME = "";
+    public static final String VIEW_NAME = "upload";
 
     @Inject
     private javax.enterprise.event.Event<UploadStartedEvent> uploadStartedEventEvent;
@@ -150,7 +150,7 @@ public class UploadView extends MHorizontalLayout implements View {
                     uploadProgress.setValue(progress);
                     progressMessage.setValue("Uploaded " + FileUtils.byteCountToDisplaySize(readBytes) +
                             " of " + FileUtils.byteCountToDisplaySize(contentLength) +
-                            " (" + progress + "%)");
+                            " (" + String.format("%.0f", progress * 100) + "%)");
                 }
             }
         });

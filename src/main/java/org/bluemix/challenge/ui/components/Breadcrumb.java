@@ -1,4 +1,4 @@
-package org.bluemix.challenge.ui;
+package org.bluemix.challenge.ui.components;
 
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
@@ -7,6 +7,9 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
+import org.bluemix.challenge.ui.RecognitionView;
+import org.bluemix.challenge.ui.StartView;
+import org.bluemix.challenge.ui.UploadView;
 import org.vaadin.cdiviewmenu.ViewMenuItem;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MCssLayout;
@@ -16,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by marco on 01/11/15.
@@ -23,6 +27,7 @@ import java.util.Optional;
 public class Breadcrumb extends MCssLayout implements ViewChangeListener {
 
     private static final String BUTTON_BREADCRUMB = "breadcrumb-btn";
+    private AtomicInteger currentStep = new AtomicInteger();
 
     private final List<MButton> buttons = new ArrayList<>();
     private final Map<String, Integer> viewIndexes = new HashMap<>();
@@ -31,6 +36,8 @@ public class Breadcrumb extends MCssLayout implements ViewChangeListener {
     public Breadcrumb() {
         withFullWidth().withStyleName("breadcrumb");
         addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
+        addComponent(breadCrumbButton(StartView.class));
+        addComponent(spacer());
         addComponent(breadCrumbButton(UploadView.class));
         addComponent(spacer());
         addComponent(breadCrumbButton(RecognitionView.class));
@@ -66,7 +73,7 @@ public class Breadcrumb extends MCssLayout implements ViewChangeListener {
             toggleButtonsState(idx);
             if (event.getOldView() instanceof Component) {
                 ((Component)event.getOldView()).removeStyleName("view-in");
-                ((Component)event.getOldView()).setStyleName("view-out");
+                ((Component)event.getOldView()).addStyleName("view-out");
             }
         });
         return canChange;

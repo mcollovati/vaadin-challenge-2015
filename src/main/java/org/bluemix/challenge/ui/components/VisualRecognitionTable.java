@@ -1,4 +1,6 @@
-package org.bluemix.challenge.ui;
+package org.bluemix.challenge.ui.components;
+
+import com.vaadin.ui.Button;
 
 import org.vaadin.viritin.fields.MTable;
 import org.watson.visualrecognition.response.Image;
@@ -12,14 +14,17 @@ import java.util.List;
  */
 public class VisualRecognitionTable extends MTable<Label> {
 
+    private Button.ClickListener onAction = event -> {
+    };
+
     public VisualRecognitionTable() {
         super(Label.class);
         withProperties("labelName", "labelScore");
         withColumnHeaders("Label", "Score");
-        setCaption("Visual recognition results");
+        setSelectable(true);
     }
 
-    void withImageResponse(Image response) {
+    public void withImageResponse(Image response) {
         List<Label> labels = response.getLabels();
         if (labels == null) {
             labels = new ArrayList<>();
