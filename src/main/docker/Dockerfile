@@ -36,7 +36,7 @@ COPY challenge.war /opt/ibm/wlp/usr/servers/defaultServer/dropins/
 COPY bluemix.pub /root/.ssh/
 RUN cat /root/.ssh/bluemix.pub >> /root/.ssh/authorized_keys
 
-RUN /opt/ibm/wlp/bin/installUtility install --acceptLicense concurrent-1.0
+#RUN /opt/ibm/wlp/bin/installUtility install --acceptLicense concurrent-1.0
 
 # Esegui Liberty tramite il supervisore
 ENTRYPOINT ["/bin/sh", "-c"]

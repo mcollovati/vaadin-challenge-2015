@@ -19,8 +19,12 @@ import lombok.RequiredArgsConstructor;
 /**
  * @author Marco Collovati
  */
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @Getter
 public class RecognitionSuccededEvent {
     private final Image recognitionResults;
+
+    public RecognitionSuccededEvent(Image recognitionResults) {
+        throw new UnsupportedOperationException("ROTTO");
+    }
 }

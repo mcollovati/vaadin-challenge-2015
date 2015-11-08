@@ -83,18 +83,20 @@ public class ServicesFacade {
     }
 
     public void recognize(Path uploadedFile) {
-        log.debug("Starting visual recognition");
-
         CompletableFuture.supplyAsync(() -> {
             try {
+                log.debug("Starting visual recognition");
                 return visualRecognitionService.recognize(Files.readAllBytes(uploadedFile));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        },executor).whenComplete( (r,t) -> {
+        }, executor).whenComplete((r, t) -> {
+
             if (t != null) {
+                log.debug("Visual recognition failed", t);
                 recognitionFailedEventEvent.fire(new RecognitionFailedEvent(t));
             } else {
+                log.debug("Visual recognition completed");
                 recognitionSuccededEventEvent.fire(new RecognitionSuccededEvent(r));
             }
         });
@@ -119,12 +121,16 @@ public class ServicesFacade {
 
     public void searchTweets(Label label) {
         String startDate = LocalDate.now().minusDays(10).format(DateTimeFormatter.ISO_DATE);
-        CompletableFuture.supplyAsync(() ->
-            twitterInsightsService.search(String.format("posted:%s %s", startDate, label.getLabelName()),10, 0)
-        ,executor).whenComplete( (d,t) -> {
+        CompletableFuture.supplyAsync(() -> {
+                    log.debug("Twitter insights query started");
+                    return twitterInsightsService.search(String.format("posted:%s %s", startDate, label.getLabelName()), 10, 0);
+                }
+                , executor).whenComplete((d, t) -> {
             if (t != null) {
+                log.debug("Twitter insights query failed", t);
                 tweetsQueryFailedEventEvent.fire(new TweetsQueryFailedEvent(t));
             } else {
+                log.debug("Twitter insights query completed");
                 tweetsQuerySuccededEventEvent.fire(new TweetsQuerySuccededEvent(d.getTweets()));
             }
         });
