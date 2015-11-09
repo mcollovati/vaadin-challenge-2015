@@ -29,7 +29,7 @@ RUN mkdir -p /root/bin/ &&\
     chmod 755 /root/bin/run_supervisor
 
 
-EXPOSE 80 9080
+EXPOSE 80
 
 COPY server.xml /opt/ibm/wlp/usr/servers/defaultServer/
 COPY challenge.war /opt/ibm/wlp/usr/servers/defaultServer/dropins/

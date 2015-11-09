@@ -46,6 +46,7 @@ import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
 import javax.inject.Inject;
 
@@ -104,15 +105,15 @@ public class RecognitionView extends MHorizontalLayout implements View {
                         .expand(new MHorizontalLayout(recognitionResults,tweetList).withFullWidth())
         );
 
-        tweetList.setCaption("Select a label and press ALT + T to get related tweets");
+        tweetList.setCaption("Select a label and press ENTER to get related tweets");
         tweetList.setVisible(false);
 
         recognitionResults.setWidth(100,Unit.PERCENTAGE);
         recognitionResults.setHeightUndefined();
-        recognitionResults.addShortcutListener(new ShortcutListener("", ShortcutAction.KeyCode.T, new int[] { ShortcutAction.ModifierKey.ALT }) {
+        recognitionResults.addShortcutListener(new ShortcutListener("", ShortcutAction.KeyCode.ENTER, new int[0]) {
             @Override
             public void handleAction(Object sender, Object target) {
-                if (recognitionResults.getValue() != null) {
+                if (target == recognitionResults && recognitionResults.getValue() != null) {
                     tweetList.searchStarted();
                     services.searchTweets(recognitionResults.getValue());
                 }
@@ -152,7 +153,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
         });
     }
 
-    public void onRecognitionSucceded(@Observes(during = TransactionPhase.AFTER_COMPLETION) RecognitionSuccededEvent event) {
+    public void onRecognitionSucceded(@Observes RecognitionSuccededEvent event) {
         UI.getCurrent().access(() -> {
             spinner.setVisible(false);
             message.setValue("Recognition completed successfully");
@@ -163,7 +164,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
         });
     }
 
-    public void onRecognitionFailed(@Observes(during = TransactionPhase.AFTER_COMPLETION) RecognitionFailedEvent event) {
+    public void onRecognitionFailed(@Observes RecognitionFailedEvent event) {
         UI.getCurrent().access(() -> {
             spinner.setVisible(false);
             message.setValue("Cannot perform visual recognition: " + event.getReason().getMessage());

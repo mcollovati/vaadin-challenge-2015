@@ -12,6 +12,15 @@
     <httpEndpoint id="defaultHttpEndpoint"
                   host="*"
                   httpPort="80"
-                  httpsPort="443" />
+                  httpsPort="443"/>
 
+    <!--
+    <managedExecutorService jndiName="comp/DefaultManagedExecutorService">
+        <contextService>
+            <jeeMetadataContext/>
+            <classloaderContext/>
+            <securityContext/>
+        </contextService>
+    </managedExecutorService>
+    -->
 </server>

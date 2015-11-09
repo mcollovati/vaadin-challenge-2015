@@ -1,5 +1,6 @@
 package org.bluemix.challenge.ui.components;
 
+import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.ui.Button;
 
 import org.vaadin.viritin.fields.MTable;
@@ -14,14 +15,12 @@ import java.util.List;
  */
 public class VisualRecognitionTable extends MTable<Label> {
 
-    private Button.ClickListener onAction = event -> {
-    };
-
     public VisualRecognitionTable() {
         super(Label.class);
         withProperties("labelName", "labelScore");
         withColumnHeaders("Label", "Score");
         setSelectable(true);
+        setImmediate(true);
     }
 
     public void withImageResponse(Image response) {

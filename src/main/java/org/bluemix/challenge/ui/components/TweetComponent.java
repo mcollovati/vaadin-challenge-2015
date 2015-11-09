@@ -107,22 +107,26 @@ public class TweetComponent extends MHorizontalLayout {
         int lastIndex = 0;
         for (Map.Entry<Index, Object> o : map.entrySet()) {
             Index idx = o.getKey();
-            Object val = o.getValue();
-            body.append(originalBody.substring(lastIndex, idx.from));
-            if (val instanceof Url) {
-                Url url = (Url) val;
-                appendUrl(body, url.getDisplayUrl(), url.getUrl());
-            } else if (val instanceof Hashtag) {
-                Hashtag hashtag = (Hashtag) val;
-                appendUrl(body, String.format("#%s", hashtag.getText()), String.format("https://twitter.com/hashtag/%s?src=hash", hashtag.getText()));
-            } else if (val instanceof UserMention) {
-                UserMention mention = (UserMention) val;
-                appendUrl(body, String.format("@%s", mention.getScreenName()), String.format("https://twitter.com/%s", mention.getScreenName()));
+            if (lastIndex < idx.from) {
+                Object val = o.getValue();
+                body.append(originalBody.substring(lastIndex, idx.from));
+                if (val instanceof Url) {
+                    Url url = (Url) val;
+                    appendUrl(body, url.getDisplayUrl(), url.getUrl());
+                } else if (val instanceof Hashtag) {
+                    Hashtag hashtag = (Hashtag) val;
+                    appendUrl(body, String.format("#%s", hashtag.getText()), String.format("https://twitter.com/hashtag/%s?src=hash", hashtag.getText()));
+                } else if (val instanceof UserMention) {
+                    UserMention mention = (UserMention) val;
+                    appendUrl(body, String.format("@%s", mention.getScreenName()), String.format("https://twitter.com/%s", mention.getScreenName()));
+                } else {
+                    body.append(originalBody.substring(idx.from, idx.to));
+                }
+                lastIndex = idx.to;
+                System.out.println("After index " + idx.toString() + ": " + body.toString());
             } else {
-                body.append(originalBody.substring(idx.from, idx.to));
+                System.out.println("Maybe invalid index " + idx + ". Last processed index was " + lastIndex);
             }
-            lastIndex = idx.to;
-            System.out.println("After index " + idx.toString() + ": " + body.toString());
         }
         body.append(originalBody.substring(lastIndex));
         System.out.println("Result: " + body.toString());
@@ -163,6 +167,11 @@ public class TweetComponent extends MHorizontalLayout {
                 return Long.compare(to, o.to);
             }
             return res;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("[%d, %d]", from, to);
         }
 
         @Override

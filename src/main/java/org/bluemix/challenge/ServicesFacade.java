@@ -17,6 +17,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import com.vaadin.ui.UI;
+
 import org.apache.commons.lang3.time.DateUtils;
 import org.bluemix.challenge.events.RecognitionFailedEvent;
 import org.bluemix.challenge.events.RecognitionSuccededEvent;
@@ -39,10 +41,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.Asynchronous;
+import javax.ejb.LocalBean;
+import javax.ejb.Singleton;
+import javax.ejb.Stateless;
 import javax.enterprise.concurrent.ManagedExecutorService;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
@@ -50,13 +59,23 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author Marco Collovati
  */
-@ApplicationScoped
+@Singleton
 @Slf4j
 public class ServicesFacade {
 
-    @Resource
+    //@Resource(lookup = "wm/MyWm")
+    //private ManagedExecutorService executor;
+
+    @Resource(lookup = "java:comp/DefaultManagedExecutorService")
     private ManagedExecutorService executor;
-    //private final ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(4));
+
+    @PostConstruct
+    void init() {
+        log.debug("Service thread " + Thread.currentThread().getContextClassLoader());
+        executor.submit(() -> log.debug("Executor 1 thread " + Thread.currentThread().getContextClassLoader()) );
+        //executor2.submit(() -> log.debug("Executor 2 thread " + Thread.currentThread().getContextClassLoader()) );
+
+    }
 
     @Inject
     private Event<RecognitionSuccededEvent> recognitionSuccededEventEvent;
@@ -67,12 +86,12 @@ public class ServicesFacade {
     @Inject
     private Event<TweetsQueryFailedEvent> tweetsQueryFailedEventEvent;
 
-
     @Inject
     VisualRecognitionService visualRecognitionService;
 
     @Inject
     DecahoseTwitterInsightsService twitterInsightsService;
+
 
     private void onRecognitionSuccess(Image image) {
         recognitionSuccededEventEvent.fire(new RecognitionSuccededEvent(image));
@@ -82,8 +101,38 @@ public class ServicesFacade {
         recognitionFailedEventEvent.fire(new RecognitionFailedEvent(t));
     }
 
+    @Asynchronous
+    public void recognize(Path uploadedFile) {
+        log.debug("recognize thread " + Thread.currentThread().getContextClassLoader());
+        try {
+            log.debug("Starting visual recognition");
+            Image r = visualRecognitionService.recognize(Files.readAllBytes(uploadedFile));
+            log.debug("Visual recognition completed");
+            recognitionSuccededEventEvent.fire(new RecognitionSuccededEvent(r));
+        } catch (Throwable t) {
+            recognitionFailedEventEvent.fire(new RecognitionFailedEvent(t));
+        }
+    }
+
+    @Asynchronous
+    public void searchTweets(Label label) {
+        String startDate = LocalDate.now().minusDays(10).format(DateTimeFormatter.ISO_DATE);
+        try {
+            log.debug("Twitter insights query started");
+            ResponseData r = twitterInsightsService.search(String.format("posted:%s %s", startDate, label.getLabelName()), 10, 0);
+            log.debug("Twitter insights query completed");
+            tweetsQuerySuccededEventEvent.fire(new TweetsQuerySuccededEvent(r.getTweets()));
+        } catch (Throwable t) {
+            log.debug("Twitter insights query failed", t);
+            tweetsQueryFailedEventEvent.fire(new TweetsQueryFailedEvent(t));
+        }
+    }
+
+
+    /*
     public void recognize(Path uploadedFile) {
         CompletableFuture.supplyAsync(() -> {
+            log.debug("Executor 1 Ui: " + UI.getCurrent());
             try {
                 log.debug("Starting visual recognition");
                 return visualRecognitionService.recognize(Files.readAllBytes(uploadedFile));
@@ -91,7 +140,6 @@ public class ServicesFacade {
                 throw new RuntimeException(e);
             }
         }, executor).whenComplete((r, t) -> {
-
             if (t != null) {
                 log.debug("Visual recognition failed", t);
                 recognitionFailedEventEvent.fire(new RecognitionFailedEvent(t));
@@ -101,21 +149,10 @@ public class ServicesFacade {
             }
         });
 
-        /*
-        ListenableFuture<Image> f = executor.submit(() -> visualRecognitionService.recognize(Files.readAllBytes(uploadedFile)));
-        Futures.addCallback(f, new FutureCallback<Image>() {
-            @Override
-            public void onSuccess(final Image result) {
-                log.debug("Visual recognition succeeded");
-                onRecognitionSuccess(result);
-            }
+        CompletableFuture.runAsync(() -> {
+            log.debug("Executor 2 Ui: " + UI.getCurrent());
+        },executor2);
 
-            @Override
-            public void onFailure(final Throwable t) {
-                log.error("Visual recognition failed", t);
-                onRecognitionFailed(t);
-            }
-        });*/
     }
 
 
@@ -134,6 +171,6 @@ public class ServicesFacade {
                 tweetsQuerySuccededEventEvent.fire(new TweetsQuerySuccededEvent(d.getTweets()));
             }
         });
-
     }
+    */
 }
