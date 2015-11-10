@@ -12,7 +12,6 @@
 package org.bluemix.challenge.ui;
 
 import com.vaadin.cdi.CDIView;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
@@ -22,10 +21,10 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 import org.bluemix.challenge.ServicesFacade;
+import org.bluemix.challenge.cdi.UIUpdate;
 import org.bluemix.challenge.events.RecognitionFailedEvent;
 import org.bluemix.challenge.events.RecognitionSuccededEvent;
 import org.bluemix.challenge.events.TweetsQueryFailedEvent;
@@ -41,13 +40,10 @@ import org.vaadin.viritin.label.RichText;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
-import javax.enterprise.event.Reception;
-import javax.enterprise.event.TransactionPhase;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
@@ -102,13 +98,14 @@ public class RecognitionView extends MHorizontalLayout implements View {
                 new MVerticalLayout(message, spinner).withFullHeight().withFullWidth()
                         .withMargin(false)
                         .alignAll(Alignment.TOP_CENTER)
-                        .expand(new MHorizontalLayout(recognitionResults,tweetList).withFullWidth())
+                        .expand(new MHorizontalLayout(recognitionResults, tweetList).withFullWidth())
         );
 
         tweetList.setCaption("Select a label and press ENTER to get related tweets");
         tweetList.setVisible(false);
+        tweetList.setHeightUndefined();
 
-        recognitionResults.setWidth(100,Unit.PERCENTAGE);
+        recognitionResults.setWidth(100, Unit.PERCENTAGE);
         recognitionResults.setHeightUndefined();
         recognitionResults.addShortcutListener(new ShortcutListener("", ShortcutAction.KeyCode.ENTER, new int[0]) {
             @Override
@@ -128,65 +125,61 @@ public class RecognitionView extends MHorizontalLayout implements View {
 
     }
 
-    public void onTweetsReceived(@Observes TweetsQuerySuccededEvent event) {
-        UI.getCurrent().access(() -> {
-            tweetList.setVisible(true);
-            tweetList.setTweets(event.getTweets());
-        });
-    }
-    public void onTweetsFailure(@Observes TweetsQueryFailedEvent event) {
-        UI.getCurrent().access(() -> {
-            tweetList.setTweets(new ArrayList<>());
-            message.setValue("Cannot get tweets for selected label: " + event.getReason().getMessage());
-            message.setStyleName(ValoTheme.LABEL_FAILURE);
-        });
+    @UIUpdate
+    void onTweetsReceived(@Observes TweetsQuerySuccededEvent event) {
+        tweetList.setVisible(true);
+        tweetList.setTweets(event.getTweets());
     }
 
-
-    public void onUploadStarted(@Observes UploadStartedEvent event) {
-        UI.getCurrent().access(() -> {
-            uploadedImage.setVisible(false);
-            uploadedImage.setSource(null);
-            spinner.setVisible(false);
-            recognitionResults.setVisible(false);
-            tweetList.setVisible(false);
-        });
+    @UIUpdate
+    void onTweetsFailure(@Observes TweetsQueryFailedEvent event) {
+        tweetList.setTweets(new ArrayList<>());
+        message.setValue("Cannot get tweets for selected label: " + event.getReason().getMessage());
+        message.setStyleName(ValoTheme.LABEL_FAILURE);
     }
 
-    public void onRecognitionSucceded(@Observes RecognitionSuccededEvent event) {
-        UI.getCurrent().access(() -> {
-            spinner.setVisible(false);
-            message.setValue("Recognition completed successfully");
-            message.setStyleName(ValoTheme.LABEL_SUCCESS);
-            recognitionResults.withImageResponse(event.getRecognitionResults());
-            recognitionResults.setVisible(true);
-            tweetList.setVisible(true);
-        });
+
+    @UIUpdate
+    void onUploadStarted(@Observes UploadStartedEvent event) {
+        uploadedImage.setVisible(false);
+        uploadedImage.setSource(null);
+        spinner.setVisible(false);
+        recognitionResults.setVisible(false);
+        tweetList.setVisible(false);
     }
 
-    public void onRecognitionFailed(@Observes RecognitionFailedEvent event) {
-        UI.getCurrent().access(() -> {
-            spinner.setVisible(false);
-            message.setValue("Cannot perform visual recognition: " + event.getReason().getMessage());
-            message.setStyleName(ValoTheme.LABEL_FAILURE);
-            recognitionResults.setVisible(false);
-        });
+    @UIUpdate
+    void onRecognitionSucceded(@Observes RecognitionSuccededEvent event) {
+        spinner.setVisible(false);
+        message.setValue("Recognition completed successfully");
+        message.setStyleName(ValoTheme.LABEL_SUCCESS);
+        recognitionResults.withImageResponse(event.getRecognitionResults());
+        recognitionResults.setVisible(true);
+        tweetList.setVisible(true);
+        recognitionResults.focus();
     }
 
-    public void onImageUploaded(@Observes UploadCompletedEvent event) {
-        UI.getCurrent().access(() -> {
-            uploadedImage.setSource(new FileResource(event.getUploadedImage()));
-            uploadedImage.setVisible(true);
-            message.setValue("Upload completed. Starting visual recognition");
-            message.setStyleName(ValoTheme.LABEL_SUCCESS);
-            spinner.setVisible(true);
-        });
-        doRecognition(event.getUploadedImage());
+    @UIUpdate
+    void onRecognitionFailed(@Observes RecognitionFailedEvent event) {
+        spinner.setVisible(false);
+        message.setValue("Cannot perform visual recognition: " + event.getReason().getMessage());
+        message.setStyleName(ValoTheme.LABEL_FAILURE);
+        recognitionResults.setVisible(false);
     }
 
-    private void doRecognition(File uploadedFile) {
+
+    @UIUpdate
+    void onImageUploaded(@Observes UploadCompletedEvent event) {
+        uploadedImage.setSource(new FileResource(event.getUploadedImage()));
+        uploadedImage.setVisible(true);
+        message.setValue("Upload completed. Starting visual recognition");
+        message.setStyleName(ValoTheme.LABEL_SUCCESS);
+        spinner.setVisible(true);
+    }
+
+    void doRecognition(@Observes UploadCompletedEvent eventFile) {
         log.debug("Starting recognition");
-        services.recognize(uploadedFile.toPath());
+        services.recognize(eventFile.getUploadedImage().toPath());
     }
 
 }

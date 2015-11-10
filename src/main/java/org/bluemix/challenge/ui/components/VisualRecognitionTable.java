@@ -1,8 +1,5 @@
 package org.bluemix.challenge.ui.components;
 
-import com.vaadin.shared.ui.MultiSelectMode;
-import com.vaadin.ui.Button;
-
 import org.vaadin.viritin.fields.MTable;
 import org.watson.visualrecognition.response.Image;
 import org.watson.visualrecognition.response.Label;

@@ -39,7 +39,6 @@ import org.vaadin.cdiviewmenu.ViewMenuItem;
 import org.vaadin.spinkit.Spinner;
 import org.vaadin.spinkit.SpinnerType;
 import org.vaadin.viritin.label.RichText;
-import org.vaadin.viritin.layouts.MCssLayout;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
@@ -80,6 +79,7 @@ public class UploadView extends MHorizontalLayout implements View {
     private final RichText info = new RichText();
     private final ProgressBar uploadProgress = new ProgressBar();
     private final UploadAndRecognize uploadAndRecognize = new UploadAndRecognize();
+    private CustomUpload upload;
 
 
     @PostConstruct
@@ -102,7 +102,7 @@ public class UploadView extends MHorizontalLayout implements View {
 
 
 
-        final CustomUpload upload = new CustomUpload("Upload an image (max 5mb)", uploadAndRecognize);
+        upload =  new CustomUpload("Upload an image (max 5mb)", uploadAndRecognize);
         upload.setButtonCaption("Click to upload");
         upload.setWidth("100%");
         upload.setImmediate(true);
@@ -161,6 +161,7 @@ public class UploadView extends MHorizontalLayout implements View {
             UploadView.this.removeStyleName("upload-started");
         });
 
+
         DragAndDropWrapper dropZone = createFileDrop(upload);
 
 
@@ -185,6 +186,7 @@ public class UploadView extends MHorizontalLayout implements View {
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         resetIndicators();
         uploadProgress.setVisible(false);
+        upload.focus();
     }
 
 

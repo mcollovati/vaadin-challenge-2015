@@ -76,8 +76,10 @@ public class Breadcrumb extends MCssLayout implements ViewChangeListener {
                 ((Component)event.getOldView()).addStyleName("view-out");
             }
         });
+
         return canChange;
     }
+
 
     @Override
     public void afterViewChange(ViewChangeEvent event) {

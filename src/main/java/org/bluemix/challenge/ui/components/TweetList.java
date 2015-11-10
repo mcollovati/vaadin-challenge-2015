@@ -11,12 +11,8 @@
  */
 package org.bluemix.challenge.ui.components;
 
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.renderers.ImageRenderer;
 
 import org.vaadin.spinkit.Spinner;
 import org.vaadin.spinkit.SpinnerType;

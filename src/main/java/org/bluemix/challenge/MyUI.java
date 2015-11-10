@@ -15,9 +15,9 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
-import org.bluemix.challenge.ui.components.Breadcrumb;
 import org.bluemix.challenge.ui.ErrorView;
 import org.bluemix.challenge.ui.StartView;
+import org.bluemix.challenge.ui.components.Breadcrumb;
 import org.vaadin.viewportservlet.ViewPortCDIServlet;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
