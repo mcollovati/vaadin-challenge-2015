@@ -5,9 +5,11 @@ import com.google.common.base.Throwables;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
+import com.vaadin.util.CurrentInstance;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -169,12 +171,16 @@ public class UIAwareManagedExecutorService implements ManagedExecutorService{
     private static class VaadinContextSupport {
         protected final UI callerUI;
 
+
         public VaadinContextSupport() {
             this.callerUI = UI.getCurrent();
         }
 
-        protected void restoreVaadinContext(Optional<UI> ui) {
+        /*
+        protected Optional<Map<Class<?>, CurrentInstance>> restoreVaadinContext(Optional<UI> ui) {
+
             if (!ui.isPresent()) {
+                CurrentInstance.setCurrent(callerUI);
                 UI.setCurrent(callerUI);
                 VaadinSession.setCurrent(callerUI.getSession());
                 VaadinService.setCurrent(VaadinSession.getCurrent().getService());
@@ -182,16 +188,21 @@ public class UIAwareManagedExecutorService implements ManagedExecutorService{
         }
         protected void resetVaadinContext(Optional<UI> ui) {
             if (!ui.isPresent()) {
+
                 UI.setCurrent(null);
                 VaadinSession.setCurrent(null);
                 VaadinService.setCurrent(null);
             }
         }
-
+        */
 
         protected <T> T doWork(Callable<T> callable) {
             Optional<UI> ui = Optional.ofNullable(UI.getCurrent());
-            restoreVaadinContext(ui);
+            Optional<Map<Class<?>, CurrentInstance>> oldInstances =
+                    ui.map( arg -> Optional.<Map<Class<?>, CurrentInstance>>empty())
+                    .orElse(Optional.ofNullable(CurrentInstance.setCurrent(callerUI)));
+
+            //restoreVaadinContext(ui);
             try {
                 return callable.call();
             } catch (Throwable t) {
@@ -199,7 +210,8 @@ public class UIAwareManagedExecutorService implements ManagedExecutorService{
                 Throwables.propagate(t);
                 return null;
             } finally {
-                resetVaadinContext(ui);
+                oldInstances.ifPresent(CurrentInstance::restoreInstances);
+                //resetVaadinContext(ui);
             }
         }
 

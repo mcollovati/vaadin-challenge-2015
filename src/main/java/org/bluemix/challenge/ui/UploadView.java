@@ -18,7 +18,9 @@ import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.ResourceReference;
 import com.vaadin.server.StreamVariable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CssLayout;
@@ -26,6 +28,7 @@ import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.ProgressBar;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -33,8 +36,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.mime.MimeTypes;
+import org.bluemix.challenge.MyUI;
 import org.bluemix.challenge.events.UploadCompletedEvent;
 import org.bluemix.challenge.events.UploadStartedEvent;
+import org.vaadin.addons.coverflow.CoverFlow;
+import org.vaadin.addons.coverflow.client.CoverflowStyle;
 import org.vaadin.cdiviewmenu.ViewMenuItem;
 import org.vaadin.spinkit.Spinner;
 import org.vaadin.spinkit.SpinnerType;
@@ -49,13 +55,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static java.util.stream.Collectors.toList;
 import static org.fest.reflect.core.Reflection.field;
 
 /**
@@ -80,6 +93,7 @@ public class UploadView extends MHorizontalLayout implements View {
     private final ProgressBar uploadProgress = new ProgressBar();
     private final UploadAndRecognize uploadAndRecognize = new UploadAndRecognize();
     private CustomUpload upload;
+    private final FilesystemCoverFlow coverFlow = new FilesystemCoverFlow();
 
 
     @PostConstruct
@@ -88,6 +102,14 @@ public class UploadView extends MHorizontalLayout implements View {
         //withFullWidth();
         setMargin(true);
         addStyleName("two-columns");
+
+        coverFlow.setCoverflowStyle(CoverflowStyle.COVERFLOW);
+        coverFlow.setMaxImageSize(300);
+        coverFlow.setImmediate(true);
+
+        /*coverFlow.addImageSelectionListener(ev ->
+                coverFlow.getFileByIndex(ev.getSelectedIndex())
+                        .ifPresent(this::startRecognition));*/
 
         uploadProgress.setVisible(false);
         uploadProgress.setWidth(100, Unit.PERCENTAGE);
@@ -165,7 +187,7 @@ public class UploadView extends MHorizontalLayout implements View {
         DragAndDropWrapper dropZone = createFileDrop(upload);
 
 
-        add(info, new MVerticalLayout(upload, dropZone, uploadProgress, progressMessage, spinner)
+        add(info, new MVerticalLayout(upload, coverFlow, dropZone, uploadProgress, progressMessage, spinner)
                         .withStyleName("upload-container")
                         .withFullHeight().withFullWidth()
                         .expand(new CssLayout())
@@ -187,19 +209,59 @@ public class UploadView extends MHorizontalLayout implements View {
         resetIndicators();
         uploadProgress.setVisible(false);
         upload.focus();
+        coverFlow.loadFromPath(((MyUI) UI.getCurrent()).getUploadFolder());
     }
 
+
+    private static class FilesystemCoverFlow extends CoverFlow {
+
+        private static final String RESOURCE_KEY = "coverFlowImage%d";
+        public FilesystemCoverFlow() {
+            super(Collections.emptyList());
+        }
+
+        Optional<File> getFileByIndex(int index) {
+            return Optional.ofNullable(getResource(String.format(RESOURCE_KEY,index)))
+                .map(r->(FileResource)r)
+                .map(FileResource::getSourceFile);
+        }
+
+        void loadFromPath(Path path) {
+            AtomicInteger counter = new AtomicInteger();
+            List<String> urls = Stream.of(path.toFile().listFiles())
+                    .filter(File::exists).filter(File::isFile)
+                    .map(FileResource::new)
+                    .peek( fr -> setResource(String.format(RESOURCE_KEY,counter.get()),fr) )
+                    .map( fr -> ResourceReference.create(fr,this,String.format(RESOURCE_KEY,counter.getAndIncrement())).getURL() )
+                    .map( url -> url.substring(5))
+                    .collect(toList());
+            setUrlList(urls);
+            setVisible(!urls.isEmpty());
+        }
+
+
+    }
+
+    private void startRecognition(File uploadedFile) {
+        //Path pathToRemove = uploadedFile.toPath();
+        //getUI().getSession().getService().addSessionDestroyListener(ev -> delete(pathToRemove) );
+        getUI().getNavigator().navigateTo(RecognitionView.VIEW_NAME);
+        uploadCompletedEventEvent.fire(new UploadCompletedEvent(uploadedFile));
+    }
 
     class UploadAndRecognize implements Upload.Receiver, Upload.SucceededListener, Upload.FailedListener {
 
         private File uploadedFile;
         private final Metadata metadata = new Metadata();
 
+        public UploadAndRecognize() {
+        }
 
         @Override
         public OutputStream receiveUpload(String filename, String mimeType) {
             try {
-                uploadedFile = Files.createTempFile(filename, "").toFile();
+                Path uploadFolder = ((MyUI)UI.getCurrent()).getUploadFolder();
+                uploadedFile = Files.createTempFile(uploadFolder, filename, "").toFile();
                 metadata.add(Metadata.CONTENT_TYPE, mimeType);
                 return new FileOutputStream(uploadedFile);
             } catch (IOException ex) {
@@ -222,6 +284,7 @@ public class UploadView extends MHorizontalLayout implements View {
                         progressMessage.setValue("Uploaded file seems not to be an image. " +
                                 "Detected media type is " + mediaType.toString());
                         progressMessage.setStyleName(ValoTheme.LABEL_FAILURE);
+                        delete(uploadedFile.toPath());
                         uploadFailed(new Upload.FailedEvent(event.getUpload(), event.getFilename(),
                                 event.getMIMEType(), event.getLength(),
                                 new RuntimeException("Invalid media type " + mediaType)));
@@ -232,29 +295,27 @@ public class UploadView extends MHorizontalLayout implements View {
             }
 
             if (isImage) {
-                getUI().getNavigator().navigateTo(RecognitionView.VIEW_NAME);
-                uploadCompletedEventEvent.fire(new UploadCompletedEvent(uploadedFile));
+                startRecognition(uploadedFile);
+                //Path pathToRemove = uploadedFile.toPath();
+                //getUI().getSession().getService().addSessionDestroyListener(ev -> delete(pathToRemove) );
+                //getUI().getNavigator().navigateTo(RecognitionView.VIEW_NAME);
+                //uploadCompletedEventEvent.fire(new UploadCompletedEvent(uploadedFile));
             }
         }
-
-        /*
-        public void clear() {
-            if (uploadedFile != null) {
-                try {
-                    Files.deleteIfExists(uploadedFile.toPath());
-                } catch (IOException ex) {
-                    log.error("Cannot delete temp file " + uploadedFile.getPath(), ex);
-                }
-            }
-            uploadedFile = null;
-        }
-        */
 
         @Override
         public void uploadFailed(Upload.FailedEvent event) {
             spinner.setVisible(false);
             log.warn("Upload failed", event.getReason());
-            //clear();
+        }
+
+    }
+
+    private static void delete(Path path) {
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException ex) {
+            log.error("Cannot delete file "+path, ex);
         }
     }
 

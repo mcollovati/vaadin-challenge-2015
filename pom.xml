@@ -116,7 +116,11 @@
             <artifactId>guava</artifactId>
             <version>18.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>vaadin-coverflow</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <dependency>
             <groupId>org.vaadin</groupId>
             <artifactId>viritin</artifactId>

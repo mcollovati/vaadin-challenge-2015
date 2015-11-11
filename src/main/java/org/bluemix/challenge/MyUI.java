@@ -1,5 +1,7 @@
 package org.bluemix.challenge;
 
+import com.google.common.base.Throwables;
+
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
@@ -7,9 +9,14 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIViewProvider;
+import com.vaadin.cdi.server.VaadinCDIServletService;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.DefaultErrorHandler;
+import com.vaadin.server.DeploymentConfiguration;
+import com.vaadin.server.RequestHandler;
+import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinServletService;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
@@ -21,7 +28,17 @@ import org.bluemix.challenge.ui.components.Breadcrumb;
 import org.vaadin.viewportservlet.ViewPortCDIServlet;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.List;
+import java.util.UUID;
+
 import javax.inject.Inject;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +57,57 @@ public class MyUI extends UI {
     @Inject
     protected CDIViewProvider viewProvider;
 
+    private Path uploadFolder;
+
+    public Path getUploadFolder() {
+        return uploadFolder;
+    }
+
+
+
+    // TODO: move to utility class
+    private static void cleanTempDir(Path path) throws IOException {
+        Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                    throws IOException
+            {
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException e)
+                    throws IOException
+            {
+                if (e == null) {
+                    Files.delete(dir);
+                    return FileVisitResult.CONTINUE;
+                } else {
+                    // directory iteration failed
+                    throw e;
+                }
+            }
+        });
+    }
+
     @Override
     protected void init(VaadinRequest request) {
+
+        try {
+            uploadFolder = Files.createTempDirectory(UUID.randomUUID().toString());
+            request.getService().addSessionDestroyListener( e -> {
+                try {
+                    cleanTempDir(uploadFolder);
+                } catch (IOException ex) {
+                    log.error("Cannot purge upload folder " + uploadFolder, ex);
+                }
+            });
+        } catch (IOException e) {
+            log.error("Cannot create upload temp folder");
+            Throwables.propagate(e);
+        }
+
+
         //MCssLayout contentLayout = new MCssLayout();
         Panel contentLayout = new Panel();
         contentLayout.setStyleName("content-layout");
@@ -99,6 +165,5 @@ public class MyUI extends UI {
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
     public static class MyUIServlet extends ViewPortCDIServlet {
-
     }
 }

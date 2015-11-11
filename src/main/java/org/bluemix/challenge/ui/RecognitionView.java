@@ -16,13 +16,17 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.ResourceReference;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
+import org.bluemix.challenge.MyUI;
 import org.bluemix.challenge.ServicesFacade;
 import org.bluemix.challenge.cdi.UIUpdate;
 import org.bluemix.challenge.events.RecognitionFailedEvent;
@@ -33,6 +37,8 @@ import org.bluemix.challenge.events.UploadCompletedEvent;
 import org.bluemix.challenge.events.UploadStartedEvent;
 import org.bluemix.challenge.ui.components.TweetList;
 import org.bluemix.challenge.ui.components.VisualRecognitionTable;
+import org.vaadin.addons.coverflow.CoverFlow;
+import org.vaadin.addons.coverflow.client.CoverflowStyle;
 import org.vaadin.cdiviewmenu.ViewMenuItem;
 import org.vaadin.spinkit.Spinner;
 import org.vaadin.spinkit.SpinnerType;
@@ -40,13 +46,25 @@ import org.vaadin.viritin.label.RichText;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author Marco Collovati
@@ -66,7 +84,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
     private final TweetList tweetList = new TweetList();
     private final Image uploadedImage = new Image();
     private final Label message = new Label();
-    private final Spinner spinner = new Spinner(SpinnerType.CUBE_GRID);
+    private final Spinner spinner = new Spinner(SpinnerType.THREE_BOUNCE);
 
 
     @PostConstruct
@@ -82,6 +100,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
 
         uploadedImage.setWidth(100, Unit.PERCENTAGE);
 
+
         spinner.setVisible(false);
         recognitionResults.setVisible(false);
 
@@ -90,18 +109,19 @@ public class RecognitionView extends MHorizontalLayout implements View {
         info.withMarkDown(getClass().getResourceAsStream("recognition.md"));
 
 
-        add(new MVerticalLayout(info)
+        add(new MVerticalLayout(info, uploadedImage)
                         .withMargin(false)
                         .withFullHeight().withFullWidth()
                         .alignAll(Alignment.TOP_CENTER)
-                        .expand(uploadedImage),
+                        //.expand(uploadedImage)
+                ,
                 new MVerticalLayout(message, spinner).withFullHeight().withFullWidth()
                         .withMargin(false)
                         .alignAll(Alignment.TOP_CENTER)
                         .expand(new MHorizontalLayout(recognitionResults, tweetList).withFullWidth())
         );
 
-        tweetList.setCaption("Select a label and press ENTER to get related tweets");
+        tweetList.setCaption("IBM Insights for Twitter");
         tweetList.setVisible(false);
         tweetList.setHeightUndefined();
 
@@ -124,6 +144,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
     public void enter(ViewChangeListener.ViewChangeEvent event) {
 
     }
+
 
     @UIUpdate
     void onTweetsReceived(@Observes TweetsQuerySuccededEvent event) {

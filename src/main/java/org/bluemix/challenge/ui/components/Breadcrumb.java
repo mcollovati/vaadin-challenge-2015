@@ -1,8 +1,10 @@
 package org.bluemix.challenge.ui.components;
 
 import com.vaadin.cdi.CDIView;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
@@ -59,6 +61,7 @@ public class Breadcrumb extends MCssLayout implements ViewChangeListener {
         button.setPrimaryStyleName(BUTTON_BREADCRUMB);
         button.setData(cdiView.value());
         button.setEnabled(false);
+        button.setClickShortcut(ShortcutAction.KeyCode.NUM0 + buttons.size(), ShortcutAction.ModifierKey.ALT);
         viewIndexes.put(cdiView.value(), buttons.size());
         buttons.add(button);
         return button;
