@@ -33,13 +33,14 @@ public class StartView extends MVerticalLayout implements View{
     public static final String VIEW_NAME = "";
 
     public StartView() {
-        withMargin(true);
-        setSizeFull();
+        withMargin(true).withFullWidth();
         setStyleName("start-view");
         addComponent(new RichText().withMarkDown(getClass().getResourceAsStream("start.md")));
         addComponent(new PrimaryButton("Clicke here to start",
                 event -> UI.getCurrent().getNavigator().navigateTo(UploadView.VIEW_NAME)));
         expand(new CssLayout());
+        setHeightUndefined();
+
     }
 
     @Override

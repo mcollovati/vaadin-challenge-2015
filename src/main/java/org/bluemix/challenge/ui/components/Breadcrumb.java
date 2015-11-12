@@ -44,12 +44,6 @@ public class Breadcrumb extends MCssLayout implements ViewChangeListener {
         addComponent(breadCrumbButton(UploadView.class));
         addComponent(spacer());
         addComponent(breadCrumbButton(RecognitionView.class));
-        addComponent(spacer());
-        addComponent(breadCrumbButton(DummyViews.View1.class));
-        addComponent(spacer());
-        addComponent(breadCrumbButton(DummyViews.View2.class));
-        addComponent(spacer());
-        addComponent(breadCrumbButton(DummyViews.View3.class));
     }
 
     private MButton spacer() {

@@ -981,7 +981,7 @@
  */
 
 .v-vaadin-version:after {
-	content: "7.5.8";
+	content: "7.5.9";
 }
 
 .v-widget {
@@ -13900,10 +13900,22 @@ div.v-layout.v-horizontal.v-widget {
 	padding-right: 10px;
 }
 
+.mytheme .v-ui[width-range~="0-468"] .breadcrumb-btn {
+	min-width: auto;
+}
+
+.mytheme .v-ui[width-range~="0-468"] .breadcrumb-btn .breadcrumb-btn-caption {
+	display: none;
+}
+
 .mytheme .v-ui[width-range~="0-640"] .main-layout {
 	padding-top: 10px;
 	padding-left: 10px;
 	padding-right: 10px;
+}
+
+.mytheme .v-ui[width-range~="0-640"] .v-panel-content-content-layout > .v-layout {
+	padding-right: 24px;
 }
 
 .mytheme .v-ui[width-range~="0-640"] .content-layout .v-horizontallayout-two-columns  > .v-expand > .v-slot {
@@ -13915,6 +13927,16 @@ div.v-layout.v-horizontal.v-widget {
 
 .mytheme .v-ui[width-range~="0-640"] .content-layout .v-horizontallayout-two-columns .upload-container {
 	padding: 0;
+}
+
+.mytheme .v-ui[width-range~="0-640"] .recognition-view .results .v-expand {
+	padding-left: 0px !important;
+}
+
+.mytheme .v-ui[width-range~="0-640"] .recognition-view .results .v-slot {
+	width: 100% !important;
+	display: block !important;
+	margin-left: 0px !important;
 }
 
 .mytheme .v-ui .upload-drop-zone {

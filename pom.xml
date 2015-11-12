@@ -11,7 +11,7 @@
     <name>challenge</name>
 
     <properties>
-        <vaadin.version>7.5.8</vaadin.version>
+        <vaadin.version>7.5.9</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
         <jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
         <project.source.version>1.8</project.source.version>

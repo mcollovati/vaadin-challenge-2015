@@ -19,6 +19,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
 import com.vaadin.server.ResourceReference;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Image;
@@ -89,9 +90,11 @@ public class RecognitionView extends MHorizontalLayout implements View {
 
     @PostConstruct
     void initView() {
-        setMargin(true);
-        setSizeFull();
-        addStyleName("two-columns");
+        withMargin(true).withFullWidth();
+        //setMargin(true);
+        //setSizeFull();
+        addStyleName("two-columns recognition-view");
+
 
         message.setWidth(100, Unit.PERCENTAGE);
         message.setValue("Visual recognition in progress");
@@ -118,7 +121,9 @@ public class RecognitionView extends MHorizontalLayout implements View {
                 new MVerticalLayout(message, spinner).withFullHeight().withFullWidth()
                         .withMargin(false)
                         .alignAll(Alignment.TOP_CENTER)
-                        .expand(new MHorizontalLayout(recognitionResults, tweetList).withFullWidth())
+                        .expand(new MHorizontalLayout(recognitionResults, tweetList)
+                                .withStyleName("results")
+                                .withFullWidth())
         );
 
         tweetList.setCaption("IBM Insights for Twitter");
@@ -150,6 +155,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
     void onTweetsReceived(@Observes TweetsQuerySuccededEvent event) {
         tweetList.setVisible(true);
         tweetList.setTweets(event.getTweets());
+        getUI().scrollIntoView(tweetList);
     }
 
     @UIUpdate
@@ -157,6 +163,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
         tweetList.setTweets(new ArrayList<>());
         message.setValue("Cannot get tweets for selected label: " + event.getReason().getMessage());
         message.setStyleName(ValoTheme.LABEL_FAILURE);
+        getUI().scrollIntoView(message);
     }
 
 
@@ -178,6 +185,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
         recognitionResults.setVisible(true);
         tweetList.setVisible(true);
         recognitionResults.focus();
+        getUI().scrollIntoView(recognitionResults);
     }
 
     @UIUpdate
@@ -186,6 +194,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
         message.setValue("Cannot perform visual recognition: " + event.getReason().getMessage());
         message.setStyleName(ValoTheme.LABEL_FAILURE);
         recognitionResults.setVisible(false);
+        getUI().scrollIntoView(message);
     }
 
 
@@ -196,6 +205,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
         message.setValue("Upload completed. Starting visual recognition");
         message.setStyleName(ValoTheme.LABEL_SUCCESS);
         spinner.setVisible(true);
+        getUI().scrollIntoView(message);
     }
 
     void doRecognition(@Observes UploadCompletedEvent eventFile) {

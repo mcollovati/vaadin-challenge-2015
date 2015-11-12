@@ -98,10 +98,10 @@ public class UploadView extends MHorizontalLayout implements View {
 
     @PostConstruct
     void initView() {
-        setSizeFull();
-        //withFullWidth();
-        setMargin(true);
-        addStyleName("two-columns");
+        //setSizeFull();
+        withFullWidth().withMargin(true);
+        //setMargin(true);
+        addStyleName("two-columns upload-view");
 
         coverFlow.setCoverflowStyle(CoverflowStyle.COVERFLOW);
         coverFlow.setMaxImageSize(300);
@@ -120,7 +120,7 @@ public class UploadView extends MHorizontalLayout implements View {
 
         //info.setSizeFull();
         info.setWidth(100,Unit.PERCENTAGE);
-        info.withMarkDown(getClass().getResourceAsStream("start.md"));
+        info.withMarkDown(getClass().getResourceAsStream("upload.md"));
 
 
 

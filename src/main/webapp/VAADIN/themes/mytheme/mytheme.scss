@@ -140,12 +140,26 @@
       }
     }
 
+    @include width-range(0,468){
+        .breadcrumb-btn {
+            min-width: auto;
+
+            .breadcrumb-btn-caption {
+                display: none;
+            }
+        }
+    }
+
     @include width-range(0,640){
       .main-layout {
         padding-top: 10px;
         padding-left: 10px;
         padding-right: 10px;
       }
+
+       .v-panel-content-content-layout > .v-layout {
+            padding-right: 24px;
+       }
 
       .content-layout .v-horizontallayout-two-columns {
         > .v-expand > .v-slot {
@@ -157,6 +171,17 @@
 
         .upload-container {
           padding: 0;
+        }
+      }
+
+      .recognition-view .results {
+        .v-expand {
+            padding-left: 0px !important;
+        }
+        .v-slot {
+          width: 100% !important;
+          display: block !important;
+          margin-left: 0px !important;
         }
       }
 
