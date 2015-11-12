@@ -187,7 +187,7 @@ public class UploadView extends MHorizontalLayout implements View {
         DragAndDropWrapper dropZone = createFileDrop(upload);
 
 
-        add(info, new MVerticalLayout(upload, coverFlow, dropZone, uploadProgress, progressMessage, spinner)
+        add(info, new MVerticalLayout(upload, dropZone, uploadProgress, progressMessage, spinner)
                         .withStyleName("upload-container")
                         .withFullHeight().withFullWidth()
                         .expand(new CssLayout())
@@ -209,7 +209,7 @@ public class UploadView extends MHorizontalLayout implements View {
         resetIndicators();
         uploadProgress.setVisible(false);
         upload.focus();
-        coverFlow.loadFromPath(((MyUI) UI.getCurrent()).getUploadFolder());
+        //coverFlow.loadFromPath(((MyUI) UI.getCurrent()).getUploadFolder());
     }
 
 

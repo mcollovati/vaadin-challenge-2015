@@ -9,6 +9,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
+import org.bluemix.challenge.ui.DummyViews;
 import org.bluemix.challenge.ui.RecognitionView;
 import org.bluemix.challenge.ui.StartView;
 import org.bluemix.challenge.ui.UploadView;
@@ -43,6 +44,12 @@ public class Breadcrumb extends MCssLayout implements ViewChangeListener {
         addComponent(breadCrumbButton(UploadView.class));
         addComponent(spacer());
         addComponent(breadCrumbButton(RecognitionView.class));
+        addComponent(spacer());
+        addComponent(breadCrumbButton(DummyViews.View1.class));
+        addComponent(spacer());
+        addComponent(breadCrumbButton(DummyViews.View2.class));
+        addComponent(spacer());
+        addComponent(breadCrumbButton(DummyViews.View3.class));
     }
 
     private MButton spacer() {
