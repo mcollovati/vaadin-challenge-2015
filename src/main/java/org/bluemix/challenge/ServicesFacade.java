@@ -13,6 +13,7 @@ package org.bluemix.challenge;
 
 import com.vaadin.ui.UI;
 
+import org.apache.commons.io.IOUtils;
 import org.bluemix.challenge.cdi.UIAwareManagedExecutorService;
 import org.bluemix.challenge.events.RecognitionFailedEvent;
 import org.bluemix.challenge.events.RecognitionSuccededEvent;
@@ -23,6 +24,7 @@ import org.watson.visualrecognition.VisualRecognitionService;
 import org.watson.visualrecognition.response.Label;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -69,12 +71,13 @@ public class ServicesFacade implements Serializable {
     @Inject
     DecahoseTwitterInsightsService twitterInsightsService;
 
-    public void recognize(Path uploadedFile) {
+    public void recognize(InputStream inputStream) {
         CompletableFuture.supplyAsync(() -> {
             log.debug("Executor 1 Ui: " + UI.getCurrent());
             try {
                 log.debug("Starting visual recognition");
-                return visualRecognitionService.recognize(Files.readAllBytes(uploadedFile));
+                return visualRecognitionService.recognize(IOUtils.toByteArray(inputStream));
+                        //Files.readAllBytes(uploadedFile));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

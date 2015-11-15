@@ -39,6 +39,8 @@ import org.apache.tika.mime.MimeTypes;
 import org.bluemix.challenge.MyUI;
 import org.bluemix.challenge.events.UploadCompletedEvent;
 import org.bluemix.challenge.events.UploadStartedEvent;
+import org.bluemix.challenge.io.ImageResource;
+import org.bluemix.challenge.io.ImageStorage;
 import org.vaadin.addons.coverflow.CoverFlow;
 import org.vaadin.addons.coverflow.client.CoverflowStyle;
 import org.vaadin.cdiviewmenu.ViewMenuItem;
@@ -85,6 +87,9 @@ public class UploadView extends MHorizontalLayout implements View {
     private javax.enterprise.event.Event<UploadStartedEvent> uploadStartedEventEvent;
     @Inject
     private javax.enterprise.event.Event<UploadCompletedEvent> uploadCompletedEventEvent;
+
+    @Inject
+    private ImageStorage imageStorage;
 
     private static final long MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
     private Spinner spinner;
@@ -241,17 +246,20 @@ public class UploadView extends MHorizontalLayout implements View {
 
 
     }
+    private void startRecognition(ImageResource resource) {
 
-    private void startRecognition(File uploadedFile) {
-        //Path pathToRemove = uploadedFile.toPath();
-        //getUI().getSession().getService().addSessionDestroyListener(ev -> delete(pathToRemove) );
+    //}
+
+    //private void startRecognition(File uploadedFile) {
         getUI().getNavigator().navigateTo(RecognitionView.VIEW_NAME);
-        uploadCompletedEventEvent.fire(new UploadCompletedEvent(uploadedFile));
+        //uploadCompletedEventEvent.fire(new UploadCompletedEvent(uploadedFile));
+        uploadCompletedEventEvent.fire(new UploadCompletedEvent(resource));
     }
 
     class UploadAndRecognize implements Upload.Receiver, Upload.SucceededListener, Upload.FailedListener {
 
-        private File uploadedFile;
+        //private File uploadedFile;
+        private Optional<ImageResource> resource;
         private final Metadata metadata = new Metadata();
 
         public UploadAndRecognize() {
@@ -259,6 +267,10 @@ public class UploadView extends MHorizontalLayout implements View {
 
         @Override
         public OutputStream receiveUpload(String filename, String mimeType) {
+            resource = imageStorage.createResource(filename);
+            metadata.add(Metadata.CONTENT_TYPE, mimeType);
+            return resource.map(ImageResource::getOutputStream).orElse(null);
+            /*
             try {
                 Path uploadFolder = ((MyUI)UI.getCurrent()).getUploadFolder();
                 uploadedFile = Files.createTempFile(uploadFolder, filename, "").toFile();
@@ -269,6 +281,7 @@ public class UploadView extends MHorizontalLayout implements View {
                 log.error("Cannot create upload output stream", ex);
             }
             return null;
+            */
         }
 
         @Override
@@ -277,14 +290,16 @@ public class UploadView extends MHorizontalLayout implements View {
             // Is an image
             boolean isImage = true;
             try {
-                try (InputStream is = new BufferedInputStream(Files.newInputStream(uploadedFile.toPath()))) {
+                //try (InputStream is = new BufferedInputStream(Files.newInputStream(uploadedFile.toPath()))) {
+                try (InputStream is = new BufferedInputStream(resource.map(ImageResource::getInputStream).orElse(ImageResource.EMPTY))) {
                     MediaType mediaType = MimeTypes.getDefaultMimeTypes().detect(is, metadata);
                     isImage = "image".equals(mediaType.getType());
                     if (!isImage) {
                         progressMessage.setValue("Uploaded file seems not to be an image. " +
                                 "Detected media type is " + mediaType.toString());
                         progressMessage.setStyleName(ValoTheme.LABEL_FAILURE);
-                        delete(uploadedFile.toPath());
+                        resource.ifPresent(ImageResource::destroy);
+                        //delete(uploadedFile.toPath());
                         uploadFailed(new Upload.FailedEvent(event.getUpload(), event.getFilename(),
                                 event.getMIMEType(), event.getLength(),
                                 new RuntimeException("Invalid media type " + mediaType)));
@@ -295,11 +310,9 @@ public class UploadView extends MHorizontalLayout implements View {
             }
 
             if (isImage) {
-                startRecognition(uploadedFile);
-                //Path pathToRemove = uploadedFile.toPath();
-                //getUI().getSession().getService().addSessionDestroyListener(ev -> delete(pathToRemove) );
-                //getUI().getNavigator().navigateTo(RecognitionView.VIEW_NAME);
-                //uploadCompletedEventEvent.fire(new UploadCompletedEvent(uploadedFile));
+                //startRecognition(uploadedFile);
+                resource.ifPresent(UploadView.this::startRecognition);
+
             }
         }
 

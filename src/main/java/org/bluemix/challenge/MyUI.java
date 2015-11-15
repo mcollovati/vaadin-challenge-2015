@@ -22,6 +22,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
+import org.bluemix.challenge.io.ImageStorage;
 import org.bluemix.challenge.ui.ErrorView;
 import org.bluemix.challenge.ui.StartView;
 import org.bluemix.challenge.ui.components.Breadcrumb;
@@ -57,14 +58,17 @@ public class MyUI extends UI {
     @Inject
     protected CDIViewProvider viewProvider;
 
-    private Path uploadFolder;
+    @Inject
+    protected ImageStorage imageStorage;
+    //private Path uploadFolder;
 
+    /*
     public Path getUploadFolder() {
         return uploadFolder;
     }
+    */
 
-
-
+    /*
     // TODO: move to utility class
     private static void cleanTempDir(Path path) throws IOException {
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
@@ -89,10 +93,12 @@ public class MyUI extends UI {
             }
         });
     }
+    */
 
     @Override
     protected void init(VaadinRequest request) {
 
+        /*
         try {
             uploadFolder = Files.createTempDirectory(UUID.randomUUID().toString());
             request.getService().addSessionDestroyListener( e -> {
@@ -106,7 +112,8 @@ public class MyUI extends UI {
             log.error("Cannot create upload temp folder");
             Throwables.propagate(e);
         }
-
+        */
+        request.getService().addSessionDestroyListener(ev -> imageStorage.destroy());
 
         //MCssLayout contentLayout = new MCssLayout();
         Panel contentLayout = new Panel();

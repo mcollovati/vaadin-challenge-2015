@@ -200,7 +200,8 @@ public class RecognitionView extends MHorizontalLayout implements View {
 
     @UIUpdate
     void onImageUploaded(@Observes UploadCompletedEvent event) {
-        uploadedImage.setSource(new FileResource(event.getUploadedImage()));
+        //uploadedImage.setSource(new FileResource(event.getUploadedImage()));
+        uploadedImage.setSource(event.getUploadedImage().asVaadinResource());
         uploadedImage.setVisible(true);
         message.setValue("Upload completed. Starting visual recognition");
         message.setStyleName(ValoTheme.LABEL_SUCCESS);
@@ -210,7 +211,8 @@ public class RecognitionView extends MHorizontalLayout implements View {
 
     void doRecognition(@Observes UploadCompletedEvent eventFile) {
         log.debug("Starting recognition");
-        services.recognize(eventFile.getUploadedImage().toPath());
+        //services.recognize(eventFile.getUploadedImage().toPath());
+        services.recognize(eventFile.getUploadedImage().getInputStream());
     }
 
 }
