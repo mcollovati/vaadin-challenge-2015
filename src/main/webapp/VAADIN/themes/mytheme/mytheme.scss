@@ -125,6 +125,15 @@
 
   }
 
+  .tweet {
+      padding-bottom: 10px;
+
+      .tweet-author-image {
+        border-radius: 15px;
+      }
+  }
+
+
   .v-ui {
     background-color: white;
 

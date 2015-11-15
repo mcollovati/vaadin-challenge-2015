@@ -20,8 +20,11 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.themes.ValoTheme;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.ocpsoft.prettytime.PrettyTime;
 import org.vaadin.viritin.label.RichText;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
+import org.vaadin.viritin.layouts.MMarginInfo;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 import org.watson.twitterinsights.response.Actor;
 import org.watson.twitterinsights.response.Hashtag;
@@ -30,6 +33,7 @@ import org.watson.twitterinsights.response.Tweet;
 import org.watson.twitterinsights.response.Url;
 import org.watson.twitterinsights.response.UserMention;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -41,17 +45,20 @@ import java.util.TreeMap;
 /**
  * @author Marco Collovati
  */
-public class TweetComponent extends MHorizontalLayout {
+public class TweetComponent extends MVerticalLayout {
 
     TweetComponent(Tweet tweet) {
         addStyleName("tweet");
         addStyleName(ValoTheme.PANEL_BORDERLESS);
-        withFullWidth().withMargin(new MarginInfo(false, true, false, true));
+        withFullWidth()
+                .withSpacing(false)
+                .withMargin(new MarginInfo(false, true, false, true));
+
 
         Actor actor = tweet.getMessage().getActor();
-        Image image = new Image();
-        image.addStyleName("tweet-author-image");
-        image.setSource(new ExternalResource(actor.getImage()));
+        Image authorImage = new Image();
+        authorImage.addStyleName("tweet-author-image");
+        authorImage.setSource(new ExternalResource(actor.getImage()));
 
         Label name = new Label(actor.getDisplayName());
         name.setStyleName("tweet-author-name");
@@ -65,21 +72,36 @@ public class TweetComponent extends MHorizontalLayout {
         body.setWidth("100%");
         body.setHeightUndefined();
 
-        Label tweetDate = new Label(
-                String.format("%s on %s at %s", actor.getDisplayName(),
+
+
+
+        Label tweetDate = new Label(new PrettyTime(new Date()).format(tweet.getMessage().getPostedTime()));
+                /*String.format("%s on %s at %s", actor.getDisplayName(),
                         DateFormatUtils.format(tweet.getMessage().getPostedTime(), "yyyy-MM-dd"),
                         DateFormatUtils.format(tweet.getMessage().getPostedTime(), "HH:mm")
-                ));
+                ));*/
+
         tweetDate.addStyleName(ValoTheme.LABEL_BOLD);
 
+        MVerticalLayout authorBox = new MVerticalLayout(name, authorLink)
+                .withMargin(false).withSpacing(false)
+                .withFullWidth();
+        add(tweetDate, body, new MHorizontalLayout(authorImage)
+                .withMargin(false).withSpacing(true).withFullWidth()
+                .expand(authorBox)
+                .withAlign(authorBox, Alignment.MIDDLE_LEFT)
+        );
+
+        /*
         add(new MVerticalLayout(
-                        image,
+                        authorImage,
                         authorLink
                 ).withWidth("120px").withMargin(false).withSpacing(false)
-                        .withAlign(image, Alignment.TOP_CENTER)
+                        .withAlign(authorImage, Alignment.TOP_CENTER)
                         .withAlign(authorLink, Alignment.TOP_CENTER)
         ).expand(new MVerticalLayout(tweetDate, body).withMargin(new MarginInfo(false, true, false, true))
                 .withSpacing(false).withFullWidth());
+                */
     }
 
     private String processTweetBody(Message message) {
