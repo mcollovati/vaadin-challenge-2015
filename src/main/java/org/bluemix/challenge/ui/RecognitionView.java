@@ -101,18 +101,20 @@ public class RecognitionView extends MHorizontalLayout implements View {
         message.setStyleName("progress-message");
         message.addStyleName(ValoTheme.LABEL_COLORED);
 
-        uploadedImage.setWidth(50, Unit.PERCENTAGE);
+        //uploadedImage.setWidth(50, Unit.PERCENTAGE);
+        uploadedImage.setWidth(100, Unit.PERCENTAGE);
 
 
         spinner.setVisible(false);
-        recognitionResults.setVisible(false);
+        recognitionResults.setVisible(true);
 
 
         //info.setSizeFull();
         info.withMarkDown(getClass().getResourceAsStream("recognition.md"));
 
 
-        add(new MVerticalLayout(info, uploadedImage)
+        //add(new MVerticalLayout(info, uploadedImage)
+        add(new MVerticalLayout(info)
                         .withMargin(false)
                         .withFullHeight().withFullWidth()
                         .alignAll(Alignment.TOP_CENTER)
@@ -120,7 +122,8 @@ public class RecognitionView extends MHorizontalLayout implements View {
                 new MVerticalLayout(message, spinner).withFullHeight().withFullWidth()
                         .withMargin(false)
                         .alignAll(Alignment.TOP_CENTER)
-                        .expand(new MHorizontalLayout(recognitionResults, tweetList)
+                        //.expand(new MHorizontalLayout(recognitionResults, tweetList)
+                        .expand(new MHorizontalLayout(uploadedImage,recognitionResults)
                                 .withStyleName("results")
                                 .withFullWidth())
         );
@@ -130,7 +133,8 @@ public class RecognitionView extends MHorizontalLayout implements View {
         tweetList.setHeightUndefined();
 
         recognitionResults.setWidth(100, Unit.PERCENTAGE);
-        recognitionResults.setHeightUndefined();
+        //recognitionResults.setHeightUndefined();
+        recognitionResults.setHeight(100, Unit.PERCENTAGE);
         recognitionResults.addShortcutListener(new ShortcutListener("", ShortcutAction.KeyCode.ENTER, new int[0]) {
             @Override
             public void handleAction(Object sender, Object target) {
@@ -171,7 +175,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
         uploadedImage.setVisible(false);
         uploadedImage.setSource(null);
         spinner.setVisible(false);
-        recognitionResults.setVisible(false);
+        ////recognitionResults.setVisible(false);
         tweetList.setVisible(false);
     }
 
@@ -181,9 +185,9 @@ public class RecognitionView extends MHorizontalLayout implements View {
         message.setValue("Recognition completed successfully");
         message.setStyleName(ValoTheme.LABEL_SUCCESS);
         recognitionResults.withImageResponse(event.getRecognitionResults());
-        recognitionResults.setVisible(true);
+        ////recognitionResults.setVisible(true);
         tweetList.setVisible(true);
-        recognitionResults.focus();
+        //recognitionResults.focus();
         getUI().scrollIntoView(recognitionResults);
     }
 
@@ -192,7 +196,8 @@ public class RecognitionView extends MHorizontalLayout implements View {
         spinner.setVisible(false);
         message.setValue("Cannot perform visual recognition: " + event.getReason().getMessage());
         message.setStyleName(ValoTheme.LABEL_FAILURE);
-        recognitionResults.setVisible(false);
+        ////recognitionResults.setVisible(false);
+        recognitionResults.clearTable();
         getUI().scrollIntoView(message);
     }
 
