@@ -80,6 +80,12 @@ public class FileImageStorage implements ImageStorage {
                         throw e;
                     }
                 }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                    // Ignore error
+                    return FileVisitResult.CONTINUE;
+                }
             });
         } catch (IOException ex) {
             log.error("Cannot purge upload folder " + storagePath, ex);

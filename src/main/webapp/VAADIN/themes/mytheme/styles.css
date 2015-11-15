@@ -13886,6 +13886,16 @@ div.v-layout.v-horizontal.v-widget {
 	opacity: 1 !important;
 }
 
+.mytheme .tweet {
+	border-bottom: 1px;
+	border-bottom-style: inset;
+	padding-bottom: 10px;
+}
+
+.mytheme .tweet .tweet-author-image {
+	border-radius: 15px;
+}
+
 .mytheme .v-ui {
 	background-color: white;
 }

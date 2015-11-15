@@ -101,7 +101,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
         message.setStyleName("progress-message");
         message.addStyleName(ValoTheme.LABEL_COLORED);
 
-        uploadedImage.setWidth(100, Unit.PERCENTAGE);
+        uploadedImage.setWidth(50, Unit.PERCENTAGE);
 
 
         spinner.setVisible(false);
@@ -116,7 +116,6 @@ public class RecognitionView extends MHorizontalLayout implements View {
                         .withMargin(false)
                         .withFullHeight().withFullWidth()
                         .alignAll(Alignment.TOP_CENTER)
-                        //.expand(uploadedImage)
                 ,
                 new MVerticalLayout(message, spinner).withFullHeight().withFullWidth()
                         .withMargin(false)
