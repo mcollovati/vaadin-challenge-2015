@@ -137,6 +137,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
             public void handleAction(Object sender, Object target) {
                 if (target == recognitionResults && recognitionResults.getValue() != null) {
                     tweetList.searchStarted();
+                    getUI().scrollIntoView(tweetList);
                     services.searchTweets(recognitionResults.getValue());
                 }
             }
@@ -155,7 +156,6 @@ public class RecognitionView extends MHorizontalLayout implements View {
     void onTweetsReceived(@Observes TweetsQuerySuccededEvent event) {
         tweetList.setVisible(true);
         tweetList.setTweets(event.getTweets());
-        getUI().scrollIntoView(tweetList);
     }
 
     @UIUpdate
