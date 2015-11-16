@@ -13894,6 +13894,13 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 15px;
 }
 
+.mytheme .gallery-image {
+	padding: 10px;
+	background-color: #fff;
+	box-shadow: 0 0 5px #ddd;
+	margin: 0 0 2.5% 2.5%;
+}
+
 .mytheme .v-ui {
 	background-color: white;
 }

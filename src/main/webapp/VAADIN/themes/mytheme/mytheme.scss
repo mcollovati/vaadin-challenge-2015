@@ -133,6 +133,17 @@
       }
   }
 
+  .gallery-image {
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 5px #ddd;
+    margin: 0 0 2.5% 2.5%;
+    width: 45%;
+
+    .v-caption {
+        display: none;
+    }
+  }
 
   .v-ui {
     background-color: white;

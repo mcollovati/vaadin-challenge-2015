@@ -1,18 +1,13 @@
 package org.bluemix.challenge.ui.components;
 
 import com.vaadin.cdi.CDIView;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
-import org.bluemix.challenge.ui.DummyViews;
-import org.bluemix.challenge.ui.RecognitionView;
-import org.bluemix.challenge.ui.StartView;
-import org.bluemix.challenge.ui.UploadView;
+import org.bluemix.challenge.ui.*;
 import org.vaadin.cdiviewmenu.ViewMenuItem;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MCssLayout;
@@ -43,7 +38,9 @@ public class Breadcrumb extends MCssLayout implements ViewChangeListener {
         addComponent(spacer());
         addComponent(breadCrumbButton(UploadView.class));
         addComponent(spacer());
-        addComponent(breadCrumbButton(RecognitionView.class));
+        addComponent(breadCrumbButton(RecognitionView.class, false));
+        addComponent(spacer());
+        addComponent(breadCrumbButton(InsightsView.class, false));
     }
 
     private MButton spacer() {
@@ -55,10 +52,15 @@ public class Breadcrumb extends MCssLayout implements ViewChangeListener {
         return b;
     }
     private MButton breadCrumbButton(Class<? extends View> viewClazz) {
+        return breadCrumbButton(viewClazz, true);
+    }
+    private MButton breadCrumbButton(Class<? extends View> viewClazz, boolean linked) {
         ViewMenuItem menuItem = viewClazz.getAnnotation(ViewMenuItem.class);
         CDIView cdiView = viewClazz.getAnnotation(CDIView.class);
         MButton button = new MButton(menuItem.title()).withIcon(menuItem.icon());
-                //.withListener(e -> UI.getCurrent().getNavigator().navigateTo(cdiView.value()));
+        if (linked) {
+            button.withListener(e -> UI.getCurrent().getNavigator().navigateTo(cdiView.value()));
+        }
         button.setPrimaryStyleName(BUTTON_BREADCRUMB);
         button.setData(cdiView.value());
         button.setEnabled(false);

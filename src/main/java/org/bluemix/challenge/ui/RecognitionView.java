@@ -12,19 +12,12 @@
 package org.bluemix.challenge.ui;
 
 import com.vaadin.cdi.CDIView;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
-import com.vaadin.server.ResourceReference;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
-import org.bluemix.challenge.MyUI;
 import org.bluemix.challenge.ServicesFacade;
 import org.bluemix.challenge.cdi.UIUpdate;
 import org.bluemix.challenge.events.RecognitionFailedEvent;
@@ -35,8 +28,6 @@ import org.bluemix.challenge.events.UploadCompletedEvent;
 import org.bluemix.challenge.events.UploadStartedEvent;
 import org.bluemix.challenge.ui.components.TweetList;
 import org.bluemix.challenge.ui.components.VisualRecognitionTable;
-import org.vaadin.addons.coverflow.CoverFlow;
-import org.vaadin.addons.coverflow.client.CoverflowStyle;
 import org.vaadin.cdiviewmenu.ViewMenuItem;
 import org.vaadin.spinkit.Spinner;
 import org.vaadin.spinkit.SpinnerType;
@@ -45,25 +36,13 @@ import org.vaadin.viritin.label.RichText;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * @author Marco Collovati
@@ -86,15 +65,13 @@ public class RecognitionView extends MHorizontalLayout implements View {
     private final Spinner spinner = new Spinner(SpinnerType.THREE_BOUNCE);
     private final MButton uploadImageBtn = new MButton("Upload another image", e -> getUI().getNavigator().navigateTo(UploadView.VIEW_NAME))
             .withStyleName(ValoTheme.BUTTON_LINK);
-    private final MButton visualInsightBtn = new MButton("Proceed to Visual insights", e -> Notification.show("Not yet implemented"))
+    private final MButton insightsBtn = new MButton("Proceed to Insights", e -> getUI().getNavigator().navigateTo(InsightsView.VIEW_NAME))
             .withStyleName(ValoTheme.BUTTON_LINK);
 
 
     @PostConstruct
     void initView() {
         withMargin(true).withFullWidth();
-        //setMargin(true);
-        //setSizeFull();
         addStyleName("two-columns recognition-view");
 
 
@@ -115,11 +92,11 @@ public class RecognitionView extends MHorizontalLayout implements View {
         info.withMarkDown(getClass().getResourceAsStream("recognition.md"));
 
         uploadImageBtn.setVisible(false);
-        visualInsightBtn.setVisible(false);
+        insightsBtn.setVisible(false);
 
         //add(new MVerticalLayout(info, uploadedImage)
         add(new MVerticalLayout(info, new MHorizontalLayout(
-                        uploadImageBtn, visualInsightBtn))
+                        uploadImageBtn, insightsBtn))
                         .withMargin(false)
                         .withFullHeight().withFullWidth()
                         .alignAll(Alignment.TOP_CENTER),
@@ -138,6 +115,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
         recognitionResults.setWidth(100, Unit.PERCENTAGE);
         //recognitionResults.setHeightUndefined();
         recognitionResults.setHeight(100, Unit.PERCENTAGE);
+        /*
         recognitionResults.addShortcutListener(new ShortcutListener("", ShortcutAction.KeyCode.ENTER, new int[0]) {
             @Override
             public void handleAction(Object sender, Object target) {
@@ -148,7 +126,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
                 }
             }
         });
-
+        */
     }
 
 
@@ -181,7 +159,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
         ////recognitionResults.setVisible(false);
         tweetList.setVisible(false);
         uploadImageBtn.setVisible(false);
-        visualInsightBtn.setVisible(false);
+        insightsBtn.setVisible(false);
     }
 
     @UIUpdate
@@ -192,7 +170,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
         recognitionResults.withImageResponse(event.getRecognitionResults());
         tweetList.setVisible(true);
         uploadImageBtn.setVisible(true);
-        visualInsightBtn.setVisible(true);
+        insightsBtn.setVisible(true);
 
         getUI().scrollIntoView(recognitionResults);
     }
@@ -203,7 +181,7 @@ public class RecognitionView extends MHorizontalLayout implements View {
         message.setValue("Cannot perform visual recognition: " + event.getReason().getMessage());
         message.setStyleName(ValoTheme.LABEL_FAILURE);
         uploadImageBtn.setVisible(true);
-        visualInsightBtn.setVisible(false);
+        insightsBtn.setVisible(false);
         recognitionResults.clearTable();
         getUI().scrollIntoView(message);
     }
