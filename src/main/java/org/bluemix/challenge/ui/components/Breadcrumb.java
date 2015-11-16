@@ -57,12 +57,12 @@ public class Breadcrumb extends MCssLayout implements ViewChangeListener {
     private MButton breadCrumbButton(Class<? extends View> viewClazz) {
         ViewMenuItem menuItem = viewClazz.getAnnotation(ViewMenuItem.class);
         CDIView cdiView = viewClazz.getAnnotation(CDIView.class);
-        MButton button = new MButton(menuItem.title()).withIcon(menuItem.icon())
-                .withListener(e -> UI.getCurrent().getNavigator().navigateTo(cdiView.value()));
+        MButton button = new MButton(menuItem.title()).withIcon(menuItem.icon());
+                //.withListener(e -> UI.getCurrent().getNavigator().navigateTo(cdiView.value()));
         button.setPrimaryStyleName(BUTTON_BREADCRUMB);
         button.setData(cdiView.value());
         button.setEnabled(false);
-        button.setClickShortcut(ShortcutAction.KeyCode.NUM0 + buttons.size(), ShortcutAction.ModifierKey.ALT);
+        //button.setClickShortcut(ShortcutAction.KeyCode.NUM0 + buttons.size(), ShortcutAction.ModifierKey.ALT);
         viewIndexes.put(cdiView.value(), buttons.size());
         buttons.add(button);
         return button;

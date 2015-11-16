@@ -21,10 +21,7 @@ import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.ResourceReference;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
 import org.bluemix.challenge.MyUI;
@@ -43,6 +40,7 @@ import org.vaadin.addons.coverflow.client.CoverflowStyle;
 import org.vaadin.cdiviewmenu.ViewMenuItem;
 import org.vaadin.spinkit.Spinner;
 import org.vaadin.spinkit.SpinnerType;
+import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.label.RichText;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
@@ -86,6 +84,10 @@ public class RecognitionView extends MHorizontalLayout implements View {
     private final Image uploadedImage = new Image();
     private final Label message = new Label();
     private final Spinner spinner = new Spinner(SpinnerType.THREE_BOUNCE);
+    private final MButton uploadImageBtn = new MButton("Upload another image", e -> getUI().getNavigator().navigateTo(UploadView.VIEW_NAME))
+            .withStyleName(ValoTheme.BUTTON_LINK);
+    private final MButton visualInsightBtn = new MButton("Proceed to Visual insights", e -> Notification.show("Not yet implemented"))
+            .withStyleName(ValoTheme.BUTTON_LINK);
 
 
     @PostConstruct
@@ -112,18 +114,19 @@ public class RecognitionView extends MHorizontalLayout implements View {
         //info.setSizeFull();
         info.withMarkDown(getClass().getResourceAsStream("recognition.md"));
 
+        uploadImageBtn.setVisible(false);
+        visualInsightBtn.setVisible(false);
 
         //add(new MVerticalLayout(info, uploadedImage)
-        add(new MVerticalLayout(info)
+        add(new MVerticalLayout(info, new MHorizontalLayout(
+                        uploadImageBtn, visualInsightBtn))
                         .withMargin(false)
                         .withFullHeight().withFullWidth()
-                        .alignAll(Alignment.TOP_CENTER)
-                ,
+                        .alignAll(Alignment.TOP_CENTER),
                 new MVerticalLayout(message, spinner).withFullHeight().withFullWidth()
                         .withMargin(false)
                         .alignAll(Alignment.TOP_CENTER)
-                        //.expand(new MHorizontalLayout(recognitionResults, tweetList)
-                        .expand(new MHorizontalLayout(uploadedImage,recognitionResults)
+                        .expand(new MHorizontalLayout(uploadedImage, recognitionResults)
                                 .withStyleName("results")
                                 .withFullWidth())
         );
@@ -177,6 +180,8 @@ public class RecognitionView extends MHorizontalLayout implements View {
         spinner.setVisible(false);
         ////recognitionResults.setVisible(false);
         tweetList.setVisible(false);
+        uploadImageBtn.setVisible(false);
+        visualInsightBtn.setVisible(false);
     }
 
     @UIUpdate
@@ -185,9 +190,10 @@ public class RecognitionView extends MHorizontalLayout implements View {
         message.setValue("Recognition completed successfully");
         message.setStyleName(ValoTheme.LABEL_SUCCESS);
         recognitionResults.withImageResponse(event.getRecognitionResults());
-        ////recognitionResults.setVisible(true);
         tweetList.setVisible(true);
-        //recognitionResults.focus();
+        uploadImageBtn.setVisible(true);
+        visualInsightBtn.setVisible(true);
+
         getUI().scrollIntoView(recognitionResults);
     }
 
@@ -196,7 +202,8 @@ public class RecognitionView extends MHorizontalLayout implements View {
         spinner.setVisible(false);
         message.setValue("Cannot perform visual recognition: " + event.getReason().getMessage());
         message.setStyleName(ValoTheme.LABEL_FAILURE);
-        ////recognitionResults.setVisible(false);
+        uploadImageBtn.setVisible(true);
+        visualInsightBtn.setVisible(false);
         recognitionResults.clearTable();
         getUI().scrollIntoView(message);
     }
@@ -215,7 +222,6 @@ public class RecognitionView extends MHorizontalLayout implements View {
 
     void doRecognition(@Observes UploadCompletedEvent eventFile) {
         log.debug("Starting recognition");
-        //services.recognize(eventFile.getUploadedImage().toPath());
         services.recognize(eventFile.getUploadedImage().getInputStream());
     }
 
