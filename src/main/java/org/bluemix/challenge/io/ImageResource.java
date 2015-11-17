@@ -18,11 +18,12 @@ public interface ImageResource extends Serializable {
         }
     };
 
+    String getDescription();
+
     OutputStream getOutputStream();
 
     InputStream getInputStream();
 
     Resource asVaadinResource();
 
-    void destroy();
 }

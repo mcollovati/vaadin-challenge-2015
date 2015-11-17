@@ -136,12 +136,25 @@
   .gallery-image {
     padding: 10px;
     background-color: #fff;
+    color: valo-font-color(#fff);
+
     box-shadow: 0 0 5px #ddd;
     margin: 0 0 2.5% 2.5%;
     width: 45%;
 
+    &.selected {
+        background-color: $v-selection-color;
+        color: valo-font-color($v-selection-color);
+    }
     .v-caption {
-        display: none;
+        width: 100%;
+
+        .v-captiontext {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            display: block;
+        }
     }
   }
 
@@ -160,7 +173,7 @@
       }
     }
 
-    @include width-range(0,468){
+    @include width-range(0,640){
         .breadcrumb-btn {
             min-width: auto;
 
@@ -168,9 +181,7 @@
                 display: none;
             }
         }
-    }
 
-    @include width-range(0,640){
       .main-layout {
         padding-top: 10px;
         padding-left: 10px;
@@ -203,6 +214,10 @@
           display: block !important;
           margin-left: 0px !important;
         }
+      }
+
+      .insights-view > .v-expand > .v-slot {
+        width: 100% !important;
       }
 
   }

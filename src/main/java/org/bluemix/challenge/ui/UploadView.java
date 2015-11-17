@@ -98,23 +98,11 @@ public class UploadView extends MHorizontalLayout implements View {
     private final ProgressBar uploadProgress = new ProgressBar();
     private final UploadAndRecognize uploadAndRecognize = new UploadAndRecognize();
     private CustomUpload upload;
-    private final FilesystemCoverFlow coverFlow = new FilesystemCoverFlow();
-
 
     @PostConstruct
     void initView() {
-        //setSizeFull();
         withFullWidth().withMargin(true);
-        //setMargin(true);
         addStyleName("two-columns upload-view");
-
-        coverFlow.setCoverflowStyle(CoverflowStyle.COVERFLOW);
-        coverFlow.setMaxImageSize(300);
-        coverFlow.setImmediate(true);
-
-        /*coverFlow.addImageSelectionListener(ev ->
-                coverFlow.getFileByIndex(ev.getSelectedIndex())
-                        .ifPresent(this::startRecognition));*/
 
         uploadProgress.setVisible(false);
         uploadProgress.setWidth(100, Unit.PERCENTAGE);
@@ -123,11 +111,8 @@ public class UploadView extends MHorizontalLayout implements View {
         spinner.addStyleName("wait-job");
         spinner.setVisible(false);
 
-        //info.setSizeFull();
         info.setWidth(100,Unit.PERCENTAGE);
         info.withMarkDown(getClass().getResourceAsStream("upload.md"));
-
-
 
         upload =  new CustomUpload("Upload an image (max 5mb)", uploadAndRecognize);
         upload.setButtonCaption("Click to upload");
@@ -214,51 +199,15 @@ public class UploadView extends MHorizontalLayout implements View {
         resetIndicators();
         uploadProgress.setVisible(false);
         upload.focus();
-        //coverFlow.loadFromPath(((MyUI) UI.getCurrent()).getUploadFolder());
     }
 
 
-    private static class FilesystemCoverFlow extends CoverFlow {
-
-        private static final String RESOURCE_KEY = "coverFlowImage%d";
-        public FilesystemCoverFlow() {
-            super(Collections.emptyList());
-        }
-
-        Optional<File> getFileByIndex(int index) {
-            return Optional.ofNullable(getResource(String.format(RESOURCE_KEY,index)))
-                .map(r->(FileResource)r)
-                .map(FileResource::getSourceFile);
-        }
-
-        void loadFromPath(Path path) {
-            AtomicInteger counter = new AtomicInteger();
-            List<String> urls = Stream.of(path.toFile().listFiles())
-                    .filter(File::exists).filter(File::isFile)
-                    .map(FileResource::new)
-                    .peek( fr -> setResource(String.format(RESOURCE_KEY,counter.get()),fr) )
-                    .map( fr -> ResourceReference.create(fr,this,String.format(RESOURCE_KEY,counter.getAndIncrement())).getURL() )
-                    .map( url -> url.substring(5))
-                    .collect(toList());
-            setUrlList(urls);
-            setVisible(!urls.isEmpty());
-        }
-
-
-    }
     private void startRecognition(ImageResource resource) {
-
-    //}
-
-    //private void startRecognition(File uploadedFile) {
         getUI().getNavigator().navigateTo(RecognitionView.VIEW_NAME);
-        //uploadCompletedEventEvent.fire(new UploadCompletedEvent(uploadedFile));
         uploadCompletedEventEvent.fire(new UploadCompletedEvent(resource));
     }
 
     class UploadAndRecognize implements Upload.Receiver, Upload.SucceededListener, Upload.FailedListener {
-
-        //private File uploadedFile;
         private Optional<ImageResource> resource;
         private final Metadata metadata = new Metadata();
 
@@ -270,27 +219,12 @@ public class UploadView extends MHorizontalLayout implements View {
             resource = imageStorage.createResource(filename);
             metadata.add(Metadata.CONTENT_TYPE, mimeType);
             return resource.map(ImageResource::getOutputStream).orElse(null);
-            /*
-            try {
-                Path uploadFolder = ((MyUI)UI.getCurrent()).getUploadFolder();
-                uploadedFile = Files.createTempFile(uploadFolder, filename, "").toFile();
-                metadata.add(Metadata.CONTENT_TYPE, mimeType);
-                return new FileOutputStream(uploadedFile);
-            } catch (IOException ex) {
-                // TODO handle error
-                log.error("Cannot create upload output stream", ex);
-            }
-            return null;
-            */
         }
 
         @Override
         public void uploadSucceeded(Upload.SucceededEvent event) {
-
-            // Is an image
             boolean isImage = true;
             try {
-                //try (InputStream is = new BufferedInputStream(Files.newInputStream(uploadedFile.toPath()))) {
                 try (InputStream is = new BufferedInputStream(resource.map(ImageResource::getInputStream).orElse(ImageResource.EMPTY))) {
                     MediaType mediaType = MimeTypes.getDefaultMimeTypes().detect(is, metadata);
                     isImage = "image".equals(mediaType.getType());
@@ -298,8 +232,7 @@ public class UploadView extends MHorizontalLayout implements View {
                         progressMessage.setValue("Uploaded file seems not to be an image. " +
                                 "Detected media type is " + mediaType.toString());
                         progressMessage.setStyleName(ValoTheme.LABEL_FAILURE);
-                        resource.ifPresent(ImageResource::destroy);
-                        //delete(uploadedFile.toPath());
+                        resource.ifPresent(imageStorage::destroy);
                         uploadFailed(new Upload.FailedEvent(event.getUpload(), event.getFilename(),
                                 event.getMIMEType(), event.getLength(),
                                 new RuntimeException("Invalid media type " + mediaType)));
@@ -310,7 +243,6 @@ public class UploadView extends MHorizontalLayout implements View {
             }
 
             if (isImage) {
-                //startRecognition(uploadedFile);
                 resource.ifPresent(UploadView.this::startRecognition);
 
             }
@@ -324,14 +256,7 @@ public class UploadView extends MHorizontalLayout implements View {
 
     }
 
-    private static void delete(Path path) {
-        try {
-            Files.deleteIfExists(path);
-        } catch (IOException ex) {
-            log.error("Cannot delete file "+path, ex);
-        }
-    }
-
+    // Expose getStreamVariable()
     class CustomUpload extends Upload {
         public CustomUpload(String caption, Receiver uploadReceiver) {
             super(caption, uploadReceiver);

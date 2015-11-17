@@ -13897,8 +13897,26 @@ div.v-layout.v-horizontal.v-widget {
 .mytheme .gallery-image {
 	padding: 10px;
 	background-color: #fff;
+	color: #474747;
 	box-shadow: 0 0 5px #ddd;
 	margin: 0 0 2.5% 2.5%;
+	width: 45%;
+}
+
+.mytheme .gallery-image.selected {
+	background-color: #197de1;
+	color: #c8dbed;
+}
+
+.mytheme .gallery-image .v-caption {
+	width: 100%;
+}
+
+.mytheme .gallery-image .v-caption .v-captiontext {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	display: block;
 }
 
 .mytheme .v-ui {
@@ -13915,11 +13933,11 @@ div.v-layout.v-horizontal.v-widget {
 	padding-right: 10px;
 }
 
-.mytheme .v-ui[width-range~="0-468"] .breadcrumb-btn {
+.mytheme .v-ui[width-range~="0-640"] .breadcrumb-btn {
 	min-width: auto;
 }
 
-.mytheme .v-ui[width-range~="0-468"] .breadcrumb-btn .breadcrumb-btn-caption {
+.mytheme .v-ui[width-range~="0-640"] .breadcrumb-btn .breadcrumb-btn-caption {
 	display: none;
 }
 
@@ -13952,6 +13970,10 @@ div.v-layout.v-horizontal.v-widget {
 	width: 100% !important;
 	display: block !important;
 	margin-left: 0px !important;
+}
+
+.mytheme .v-ui[width-range~="0-640"] .insights-view > .v-expand > .v-slot {
+	width: 100% !important;
 }
 
 .mytheme .v-ui .upload-drop-zone {

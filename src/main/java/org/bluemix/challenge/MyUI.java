@@ -11,31 +11,28 @@ import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.server.VaadinCDIServletService;
 import com.vaadin.navigator.Navigator;
-import com.vaadin.server.DefaultErrorHandler;
-import com.vaadin.server.DeploymentConfiguration;
-import com.vaadin.server.RequestHandler;
-import com.vaadin.server.ServiceException;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServletService;
+import com.vaadin.server.*;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
+import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
+import org.bluemix.challenge.io.ImageResource;
 import org.bluemix.challenge.io.ImageStorage;
 import org.bluemix.challenge.ui.ErrorView;
+import org.bluemix.challenge.ui.InsightsView;
 import org.bluemix.challenge.ui.StartView;
 import org.bluemix.challenge.ui.components.Breadcrumb;
 import org.vaadin.viewportservlet.ViewPortCDIServlet;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -60,62 +57,12 @@ public class MyUI extends UI {
 
     @Inject
     protected ImageStorage imageStorage;
-    //private Path uploadFolder;
-
-    /*
-    public Path getUploadFolder() {
-        return uploadFolder;
-    }
-    */
-
-    /*
-    // TODO: move to utility class
-    private static void cleanTempDir(Path path) throws IOException {
-        Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-                    throws IOException
-            {
-                Files.delete(file);
-                return FileVisitResult.CONTINUE;
-            }
-            @Override
-            public FileVisitResult postVisitDirectory(Path dir, IOException e)
-                    throws IOException
-            {
-                if (e == null) {
-                    Files.delete(dir);
-                    return FileVisitResult.CONTINUE;
-                } else {
-                    // directory iteration failed
-                    throw e;
-                }
-            }
-        });
-    }
-    */
 
     @Override
     protected void init(VaadinRequest request) {
 
-        /*
-        try {
-            uploadFolder = Files.createTempDirectory(UUID.randomUUID().toString());
-            request.getService().addSessionDestroyListener( e -> {
-                try {
-                    cleanTempDir(uploadFolder);
-                } catch (IOException ex) {
-                    log.error("Cannot purge upload folder " + uploadFolder, ex);
-                }
-            });
-        } catch (IOException e) {
-            log.error("Cannot create upload temp folder");
-            Throwables.propagate(e);
-        }
-        */
         request.getService().addSessionDestroyListener(ev -> imageStorage.destroy());
 
-        //MCssLayout contentLayout = new MCssLayout();
         Panel contentLayout = new Panel();
         contentLayout.setStyleName("content-layout");
         contentLayout.addStyleName(ValoTheme.LAYOUT_WELL);
@@ -148,10 +95,24 @@ public class MyUI extends UI {
             Throwable t = DefaultErrorHandler.findRelevantThrowable(event.getThrowable());
             Notification.show("Ooops! Something went wrong", t.getMessage(), Notification.Type.ERROR_MESSAGE);
         });
-        navigator.navigateTo(StartView.VIEW_NAME);
         setResponsive(true);
+        //navigator.navigateTo(StartView.VIEW_NAME);
+        doTest();
+        navigator.navigateTo(InsightsView.VIEW_NAME);
     }
 
+
+    private void doTest() {
+        try {
+            for (Path p : Files.list(Paths.get("/tmp", "gallery")).toArray(Path[]::new)) {
+                ImageResource res = imageStorage.createResource(p.getFileName().toString()).get();
+                FileUtils.copyFile(p.toAbsolutePath().toFile(), res.getOutputStream());
+            }
+        } catch (IOException e) {
+            log.error("Cannot prepare demo gallery", e);
+        }
+
+    }
     /**
      * Workaround for issue 1, related to vaadin issues: 13566, 14884
      *

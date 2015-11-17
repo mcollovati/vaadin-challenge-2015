@@ -14,11 +14,10 @@ package org.bluemix.challenge;
 import com.vaadin.ui.UI;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.bluemix.challenge.cdi.UIAwareManagedExecutorService;
-import org.bluemix.challenge.events.RecognitionFailedEvent;
-import org.bluemix.challenge.events.RecognitionSuccededEvent;
-import org.bluemix.challenge.events.TweetsQueryFailedEvent;
-import org.bluemix.challenge.events.TweetsQuerySuccededEvent;
+import org.bluemix.challenge.events.*;
+import org.bluemix.challenge.io.ImageResource;
 import org.watson.twitterinsights.DecahoseTwitterInsightsService;
 import org.watson.visualrecognition.VisualRecognitionService;
 import org.watson.visualrecognition.response.Label;
@@ -26,10 +25,9 @@ import org.watson.visualrecognition.response.Label;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.PostConstruct;
@@ -57,13 +55,17 @@ public class ServicesFacade implements Serializable {
     }
 
     @Inject
-    private Event<RecognitionSuccededEvent> recognitionSuccededEventEvent;
+    private Event<RecognitionSuccededEvent> recognitionSuccededEvent;
     @Inject
-    private Event<RecognitionFailedEvent> recognitionFailedEventEvent;
+    private Event<RecognitionFailedEvent> recognitionFailedEvent;
     @Inject
-    private Event<TweetsQuerySuccededEvent> tweetsQuerySuccededEventEvent;
+    private Event<TweetsQuerySuccededEvent> tweetsQuerySuccededEvent;
     @Inject
-    private Event<TweetsQueryFailedEvent> tweetsQueryFailedEventEvent;
+    private Event<TweetsQueryFailedEvent> tweetsQueryFailedEvent;
+    @Inject
+    private Event<VisualInsightsSuccededEvent> visualInsightsSuccededEvent;
+    @Inject
+    private Event<VisualInsightsFailedEvent> visualInsightsFailedEvent;
 
     @Inject
     VisualRecognitionService visualRecognitionService;
@@ -84,14 +86,37 @@ public class ServicesFacade implements Serializable {
         }, executor).whenComplete((r, t) -> {
             if (t != null) {
                 log.debug("Visual recognition failed", t);
-                recognitionFailedEventEvent.fire(new RecognitionFailedEvent(t));
+                recognitionFailedEvent.fire(new RecognitionFailedEvent(t));
             } else {
                 log.debug("Visual recognition completed");
-                recognitionSuccededEventEvent.fire(new RecognitionSuccededEvent(r));
+                recognitionSuccededEvent.fire(new RecognitionSuccededEvent(r));
             }
         });
     }
 
+    public void analyze(List<ImageResource> imageResources) {
+        CompletableFuture.supplyAsync(() -> {
+            // create zip
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            int v = RandomUtils.nextInt(0, 10);
+            if (v > 5 &&  v < 9) {
+                throw new RuntimeException("Dummy Service error");
+            }
+            return "OK";
+        }).whenComplete((d,t)-> {
+            if (t != null) {
+                log.debug("Visual insights failed", t);
+                visualInsightsFailedEvent.fire(new VisualInsightsFailedEvent(t));
+            } else {
+                log.debug("Visual insights completed");
+                visualInsightsSuccededEvent.fire(new VisualInsightsSuccededEvent());
+            }
+        });
+    }
 
     public void searchTweets(Label label) {
         String startDate = LocalDate.now().minusDays(10).format(DateTimeFormatter.ISO_DATE);
@@ -102,10 +127,10 @@ public class ServicesFacade implements Serializable {
                 , executor).whenComplete((d, t) -> {
             if (t != null) {
                 log.debug("Twitter insights query failed", t);
-                tweetsQueryFailedEventEvent.fire(new TweetsQueryFailedEvent(t));
+                tweetsQueryFailedEvent.fire(new TweetsQueryFailedEvent(t));
             } else {
                 log.debug("Twitter insights query completed");
-                tweetsQuerySuccededEventEvent.fire(new TweetsQuerySuccededEvent(d.getTweets()));
+                tweetsQuerySuccededEvent.fire(new TweetsQuerySuccededEvent(d.getTweets()));
             }
         });
     }

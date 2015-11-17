@@ -41,14 +41,22 @@ public class FileImageStorage implements ImageStorage {
     }
 
     @Override
+    public void destroy(ImageResource resource) {
+        resources.remove(resource);
+        if (resource instanceof FileImageResource) {
+            ((FileImageResource)resource).destroy();;
+        }
+    }
+
+    @Override
     public Optional<ImageResource> createResource(String name) {
-        String filename = FilenameUtils.getBaseName(name) + "_";
+        String filename = FilenameUtils.getBaseName(name);
         String ext = FilenameUtils.getExtension(name);
         if (!ext.isEmpty()) {
             ext = "." + ext;
         }
         try {
-            FileImageResource resource = new FileImageResource(Files.createTempFile(storagePath, filename, ext));
+            FileImageResource resource = new FileImageResource(Files.createTempFile(storagePath, filename, ext), filename+ext);
             resources.add(resource);
             return Optional.of(resource);
         } catch (IOException ex) {
