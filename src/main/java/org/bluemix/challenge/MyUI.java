@@ -19,6 +19,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.bluemix.challenge.io.ImageResource;
 import org.bluemix.challenge.io.ImageStorage;
 import org.bluemix.challenge.ui.ErrorView;
@@ -28,6 +29,8 @@ import org.bluemix.challenge.ui.components.Breadcrumb;
 import org.vaadin.viewportservlet.ViewPortCDIServlet;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -106,7 +109,8 @@ public class MyUI extends UI {
         try {
             for (Path p : Files.list(Paths.get("/tmp", "gallery")).toArray(Path[]::new)) {
                 ImageResource res = imageStorage.createResource(p.getFileName().toString()).get();
-                FileUtils.copyFile(p.toAbsolutePath().toFile(), res.getOutputStream());
+
+                IOUtils.copy(new FileInputStream(p.toAbsolutePath().toFile()), res.getOutputStream());
             }
         } catch (IOException e) {
             log.error("Cannot prepare demo gallery", e);

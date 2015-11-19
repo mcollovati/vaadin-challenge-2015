@@ -1,14 +1,3 @@
-/* ====================================================================
- * Created on 16/11/15
- * Copyright (C) 2015 Insiel Mercato S.p.a.
- * <p>
- * org.bluemix.challenge.ui.VisualInsightsView
- * <p>
- * Comments are welcome.
- * <p>
- * - Marco Collovati <marco.collovati@insielmercato.it>
- * ====================================================================
- */
 package org.bluemix.challenge.ui;
 
 import com.vaadin.cdi.CDIView;
@@ -28,6 +17,7 @@ import org.bluemix.challenge.events.VisualInsightsSuccededEvent;
 import org.bluemix.challenge.io.ImageResource;
 import org.bluemix.challenge.io.ImageStorage;
 import org.bluemix.challenge.ui.components.TweetList;
+import org.bluemix.challenge.ui.components.VisualInsightsPanel;
 import org.vaadin.cdiviewmenu.ViewMenuItem;
 import org.vaadin.spinkit.Spinner;
 import org.vaadin.spinkit.SpinnerType;
@@ -74,11 +64,13 @@ public class InsightsView extends MHorizontalLayout implements View {
     private Spinner analyzeSpinner = new Spinner(SpinnerType.THREE_BOUNCE);
     private Label analyzeLabel = new Label();
 
+    private VisualInsightsPanel visualInsightsPanel;
+
 
     @PostConstruct
     void initComponents() {
         withMargin(true).withFullWidth().withStyleName("insights-view");
-        add(infoPanel(), visualInsightsPanel(), twitterInsightsPanel());
+        add(infoPanel(), visualInsightsPanel()); //, twitterInsightsPanel());
     }
 
     private Component twitterInsightsPanel() {
@@ -89,7 +81,8 @@ public class InsightsView extends MHorizontalLayout implements View {
     }
 
     private Component visualInsightsPanel() {
-        return new CssLayout();
+        this.visualInsightsPanel = new VisualInsightsPanel();
+        return this.visualInsightsPanel;
     }
 
     private Layout infoPanel() {
@@ -99,10 +92,10 @@ public class InsightsView extends MHorizontalLayout implements View {
         final MButton toggleAllImages = new MButton(FontAwesome.CHECK_SQUARE_O)
                 .withCaption("Select/Deselect all");
         toggleAllImages.withListener(e -> {
-            boolean newValue = !(boolean)toggleAllImages.getData();
+            boolean newValue = !(boolean) toggleAllImages.getData();
             selectedResources.values().forEach(s -> s.setValue(newValue));
             toggleAllImages.setData(newValue);
-            toggleAllImages.setIcon( (newValue) ? FontAwesome.SQUARE_O: FontAwesome.CHECK_SQUARE_O );
+            toggleAllImages.setIcon((newValue) ? FontAwesome.SQUARE_O : FontAwesome.CHECK_SQUARE_O);
         }).withStyleName(ValoTheme.BUTTON_QUIET);
         toggleAllImages.setData(Boolean.FALSE);
         analyzeBtn = new PrimaryButton("Analyze", event -> startVisualInsight());
@@ -117,14 +110,16 @@ public class InsightsView extends MHorizontalLayout implements View {
 
     private void startVisualInsight() {
         List<ImageResource> toAnalyze = selectedResources.entrySet().stream()
-                .filter( e -> e.getValue().getValue())
-                .map( e -> e.getKey())
+                .filter(e -> e.getValue().getValue())
+                .map(e -> e.getKey())
                 .collect(toList());
         if (!toAnalyze.isEmpty()) {
             analyzeSpinner.setVisible(true);
             analyzeLabel.setVisible(false);
             gallery.setEnabled(false);
+            analyzeBtn.setEnabled(false);
             service.analyze(toAnalyze);
+            visualInsightsPanel.empty();
         }
     }
 
@@ -135,7 +130,10 @@ public class InsightsView extends MHorizontalLayout implements View {
         analyzeLabel.setValue("Visual insights extraction completed");
         analyzeLabel.setVisible(true);
         gallery.setEnabled(true);
+        analyzeBtn.setEnabled(hasSelectedCards());
+        visualInsightsPanel.withSummaryList(event.getSummaries());
     }
+
     @UIUpdate
     void onVisualInsightsFailed(@Observes VisualInsightsFailedEvent event) {
         analyzeSpinner.setVisible(false);
@@ -143,6 +141,8 @@ public class InsightsView extends MHorizontalLayout implements View {
         analyzeLabel.setValue("Visual insights extraction failed. Please try again");
         analyzeLabel.setVisible(true);
         gallery.setEnabled(true);
+        analyzeBtn.setEnabled(hasSelectedCards());
+        visualInsightsPanel.empty();
     }
 
     @Override
@@ -177,8 +177,7 @@ public class InsightsView extends MHorizontalLayout implements View {
             CardStatus cs = new CardStatus();
             cs.addValueChangeListener(e -> {
                 card.setStyleName("selected", cs.getValue());
-                analyzeBtn.setEnabled(selectedResources.values().stream().map(CardStatus::getValue)
-                        .distinct().anyMatch( b -> b));
+                analyzeBtn.setEnabled(hasSelectedCards());
             });
             return cs;
         });
@@ -189,6 +188,11 @@ public class InsightsView extends MHorizontalLayout implements View {
             }
         });
         return card;
+    }
+
+    private boolean hasSelectedCards() {
+        return selectedResources.values().stream().map(CardStatus::getValue)
+                .distinct().anyMatch(b -> b);
     }
 
     private void destroyResource(ImageResource imageResource) {

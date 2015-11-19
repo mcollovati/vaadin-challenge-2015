@@ -1,18 +1,16 @@
-/* ====================================================================
- * Created on 17/11/15
- * Copyright (C) 2015 Insiel Mercato S.p.a.
- * <p>
- * org.bluemix.challenge.events.VisualInsightsSuccededEvent
- * <p>
- * Comments are welcome.
- * <p>
- * - Marco Collovati <marco.collovati@insielmercato.it>
- * ====================================================================
- */
 package org.bluemix.challenge.events;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.watson.visualinsights.response.Summary;
+
+import java.util.List;
 
 /**
  * @author Marco Collovati
  */
+@RequiredArgsConstructor
 public class VisualInsightsSuccededEvent {
+    @Getter
+    private final List<Summary> summaries;
 }

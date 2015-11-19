@@ -1,25 +1,11 @@
-/* ====================================================================
- * Created on 07/11/15
- * Copyright (C) 2015 Insiel Mercato S.p.a.
- * <p>
- * org.bluemix.challenge.ui.components.TweetList
- * <p>
- * Comments are welcome.
- * <p>
- * - Marco Collovati <marco.collovati@insielmercato.it>
- * ====================================================================
- */
 package org.bluemix.challenge.ui.components;
 
-import com.vaadin.client.widget.grid.datasources.ListDataSource;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
-
 import org.vaadin.spinkit.Spinner;
 import org.vaadin.spinkit.SpinnerType;
-import org.vaadin.viritin.LazyList;
 import org.vaadin.viritin.fields.MTable;
 import org.vaadin.viritin.layouts.MMarginInfo;
 import org.vaadin.viritin.layouts.MVerticalLayout;

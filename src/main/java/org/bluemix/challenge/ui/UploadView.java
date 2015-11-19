@@ -1,14 +1,3 @@
-/* ====================================================================
- * Created on 31/10/15
- * Copyright (C) 2015 Insiel Mercato S.p.a.
- * <p>
- * org.bluemix.challenge.ui.UploadView
- * <p>
- * Comments are welcome.
- * <p>
- * - Marco Collovati <marco.collovati@insielmercato.it>
- * ====================================================================
- */
 package org.bluemix.challenge.ui;
 
 import com.vaadin.cdi.CDIView;
@@ -18,31 +7,19 @@ import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.ResourceReference;
 import com.vaadin.server.StreamVariable;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.DragAndDropWrapper;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.ProgressBar;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Upload;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.mime.MimeTypes;
-import org.bluemix.challenge.MyUI;
 import org.bluemix.challenge.events.UploadCompletedEvent;
 import org.bluemix.challenge.events.UploadStartedEvent;
 import org.bluemix.challenge.io.ImageResource;
 import org.bluemix.challenge.io.ImageStorage;
-import org.vaadin.addons.coverflow.CoverFlow;
-import org.vaadin.addons.coverflow.client.CoverflowStyle;
 import org.vaadin.cdiviewmenu.ViewMenuItem;
 import org.vaadin.spinkit.Spinner;
 import org.vaadin.spinkit.SpinnerType;
@@ -50,27 +27,15 @@ import org.vaadin.viritin.label.RichText;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-import lombok.extern.slf4j.Slf4j;
-
-import static java.util.stream.Collectors.toList;
 import static org.fest.reflect.core.Reflection.field;
 
 /**

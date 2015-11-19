@@ -1,14 +1,3 @@
-/* ====================================================================
- * Created on 31/10/15
- * Copyright (C) 2015 Insiel Mercato S.p.a.
- * <p>
- * org.bluemix.challenge.ServicesFacade
- * <p>
- * Comments are welcome.
- * <p>
- * - Marco Collovati <marco.collovati@insielmercato.it>
- * ====================================================================
- */
 package org.bluemix.challenge;
 
 import com.vaadin.ui.UI;
@@ -18,7 +7,9 @@ import org.apache.commons.lang3.RandomUtils;
 import org.bluemix.challenge.cdi.UIAwareManagedExecutorService;
 import org.bluemix.challenge.events.*;
 import org.bluemix.challenge.io.ImageResource;
+import org.bluemix.challenge.io.ZipUtils;
 import org.watson.twitterinsights.DecahoseTwitterInsightsService;
+import org.watson.visualinsights.VisualInsightsService;
 import org.watson.visualrecognition.VisualRecognitionService;
 import org.watson.visualrecognition.response.Label;
 
@@ -29,6 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -73,6 +65,9 @@ public class ServicesFacade implements Serializable {
     @Inject
     DecahoseTwitterInsightsService twitterInsightsService;
 
+    @Inject
+    VisualInsightsService visualInsightsService;
+
     public void recognize(InputStream inputStream) {
         CompletableFuture.supplyAsync(() -> {
             log.debug("Executor 1 Ui: " + UI.getCurrent());
@@ -97,23 +92,18 @@ public class ServicesFacade implements Serializable {
     public void analyze(List<ImageResource> imageResources) {
         CompletableFuture.supplyAsync(() -> {
             // create zip
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            int v = RandomUtils.nextInt(0, 10);
-            if (v > 5 &&  v < 9) {
-                throw new RuntimeException("Dummy Service error");
-            }
-            return "OK";
-        }).whenComplete((d,t)-> {
+            AtomicInteger counter = new AtomicInteger();
+            ZipUtils.ZipBuilder zipBuilder = ZipUtils.zip("images");
+            imageResources.forEach( r -> zipBuilder.addEntry(String.format("image_%d.jpg",counter.getAndIncrement()), r.getInputStream()));
+            InputStream zipStream = zipBuilder.build();
+            return visualInsightsService.summary(zipStream);
+        },executor).whenComplete((d,t)-> {
             if (t != null) {
                 log.debug("Visual insights failed", t);
                 visualInsightsFailedEvent.fire(new VisualInsightsFailedEvent(t));
             } else {
                 log.debug("Visual insights completed");
-                visualInsightsSuccededEvent.fire(new VisualInsightsSuccededEvent());
+                visualInsightsSuccededEvent.fire(new VisualInsightsSuccededEvent(d));
             }
         });
     }

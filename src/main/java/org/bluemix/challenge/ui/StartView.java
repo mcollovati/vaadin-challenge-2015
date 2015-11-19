@@ -1,14 +1,3 @@
-/* ====================================================================
- * Created on 04/11/15
- * Copyright (C) 2015 Insiel Mercato S.p.a.
- * <p>
- * org.bluemix.challenge.ui.StartView
- * <p>
- * Comments are welcome.
- * <p>
- * - Marco Collovati <marco.collovati@insielmercato.it>
- * ====================================================================
- */
 package org.bluemix.challenge.ui;
 
 import com.vaadin.cdi.CDIView;

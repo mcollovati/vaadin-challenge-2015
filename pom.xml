@@ -81,6 +81,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.vaadin.addon</groupId>
+            <artifactId>vaadin-charts</artifactId>
+            <version>3.0.0-alpha7</version>
+        </dependency>        <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-cdi</artifactId>
             <version>1.0.3</version>
@@ -90,6 +94,12 @@
             <artifactId>cdi-helpers</artifactId>
             <version>1.11</version>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin</groupId>
+            <artifactId>viritin</artifactId>
+            <version>1.28</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -115,16 +125,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>18.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.addons</groupId>
-            <artifactId>vaadin-coverflow</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin</groupId>
-            <artifactId>viritin</artifactId>
-            <version>1.28</version>
         </dependency>
         <dependency>
             <groupId>org.vaadin.watson</groupId>
