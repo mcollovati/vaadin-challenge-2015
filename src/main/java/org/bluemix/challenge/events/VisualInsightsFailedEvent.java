@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
  * @author Marco Collovati
  */
 @RequiredArgsConstructor
-public class TweetsQueryFailedEvent {
+public class VisualInsightsFailedEvent {
     @Getter
     private final Throwable reason;
+
 }

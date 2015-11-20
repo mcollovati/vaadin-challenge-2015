@@ -11,5 +11,7 @@ public interface ImageStorage {
 
     List<ImageResource> getResources();
 
+    void destroy(ImageResource resource);
+
     void destroy();
 }

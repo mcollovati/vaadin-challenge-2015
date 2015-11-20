@@ -13,6 +13,8 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Created by marco on 15/11/15.
@@ -21,12 +23,20 @@ import lombok.extern.slf4j.Slf4j;
 public class FileImageResource implements ImageResource {
 
     private final Path resource;
+    private final String fileName;
 
-    FileImageResource(Path resource) {
+
+    FileImageResource(Path resource, String fileName) {
         this.resource = Objects.requireNonNull(resource);
+        this.fileName = Objects.requireNonNull(fileName);
     }
 
 
+    @Override
+    public String getDescription() {
+        return String.format("%s (%s)", fileName,
+                FileUtils.byteCountToDisplaySize(resource.toAbsolutePath().toFile().length()));
+    }
 
     @Override
     public OutputStream getOutputStream() {
@@ -53,8 +63,7 @@ public class FileImageResource implements ImageResource {
         return new FileResource(resource.toFile());
     }
 
-    @Override
-    public void destroy() {
+    void destroy() {
         try {
             Files.deleteIfExists(resource);
         } catch (IOException ex) {
@@ -62,4 +71,16 @@ public class FileImageResource implements ImageResource {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FileImageResource resource1 = (FileImageResource) o;
+        return Objects.equals(resource, resource1.resource);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(resource);
+    }
 }
