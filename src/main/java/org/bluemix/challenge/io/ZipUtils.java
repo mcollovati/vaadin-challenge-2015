@@ -1,6 +1,9 @@
 package org.bluemix.challenge.io;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileOutputStream;
@@ -23,6 +26,20 @@ public class ZipUtils {
         return new ZipBuilder(temp);
     }
 
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Zip {
+        private final Path path;
+
+        @SneakyThrows
+        public InputStream getInputStream() {
+            return Files.newInputStream(path);
+        }
+
+        public void destroy() {
+            FileUtils.deleteQuietly(path.toFile());
+        }
+
+    }
     public static class ZipBuilder implements AutoCloseable {
 
         private final ZipOutputStream zos;
@@ -44,10 +61,9 @@ public class ZipUtils {
             return this;
         }
 
-        @SneakyThrows
-        public InputStream build() {
+        public Zip build() {
             close();
-            return Files.newInputStream(zipPath);
+            return new Zip(zipPath);
         }
 
         @Override

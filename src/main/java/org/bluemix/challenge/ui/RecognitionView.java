@@ -126,21 +126,6 @@ public class RecognitionView extends MHorizontalLayout implements View {
 
 
     @UIUpdate
-    void onTweetsReceived(@Observes TweetsQuerySuccededEvent event) {
-        tweetList.setVisible(true);
-        tweetList.setTweets(event.getTweets());
-    }
-
-    @UIUpdate
-    void onTweetsFailure(@Observes TweetsQueryFailedEvent event) {
-        tweetList.setTweets(new ArrayList<>());
-        message.setValue("Cannot get tweets for selected label: " + event.getReason().getMessage());
-        message.setStyleName(ValoTheme.LABEL_FAILURE);
-        getUI().scrollIntoView(message);
-    }
-
-
-    @UIUpdate
     void onUploadStarted(@Observes UploadStartedEvent event) {
         uploadedImage.setVisible(false);
         uploadedImage.setSource(null);

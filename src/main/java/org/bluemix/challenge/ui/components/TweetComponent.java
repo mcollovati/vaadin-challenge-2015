@@ -7,33 +7,20 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.themes.ValoTheme;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.vaadin.viritin.label.RichText;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
-import org.vaadin.viritin.layouts.MMarginInfo;
 import org.vaadin.viritin.layouts.MVerticalLayout;
-import org.watson.twitterinsights.response.Actor;
-import org.watson.twitterinsights.response.Hashtag;
-import org.watson.twitterinsights.response.Message;
-import org.watson.twitterinsights.response.Tweet;
-import org.watson.twitterinsights.response.Url;
-import org.watson.twitterinsights.response.UserMention;
+import org.watson.twitterinsights.response.*;
 
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author Marco Collovati
  */
+@Slf4j
 public class TweetComponent extends MVerticalLayout {
 
     TweetComponent(Tweet tweet) {
@@ -62,13 +49,8 @@ public class TweetComponent extends MVerticalLayout {
         body.setHeightUndefined();
 
 
-
-
         Label tweetDate = new Label(new PrettyTime(new Date()).format(tweet.getMessage().getPostedTime()));
-                /*String.format("%s on %s at %s", actor.getDisplayName(),
-                        DateFormatUtils.format(tweet.getMessage().getPostedTime(), "yyyy-MM-dd"),
-                        DateFormatUtils.format(tweet.getMessage().getPostedTime(), "HH:mm")
-                ));*/
+        tweetDate.setDescription(DateFormatUtils.format(tweet.getMessage().getPostedTime(), "yyyy-MM-dd HH:mm"));
 
         tweetDate.addStyleName(ValoTheme.LABEL_BOLD);
 
@@ -114,7 +96,7 @@ public class TweetComponent extends MVerticalLayout {
             }
         }
 
-        System.out.println("ORIGINAL: " + originalBody);
+        log.trace("ORIGINAL: {}", originalBody);
         int lastIndex = 0;
         for (Map.Entry<Index, Object> o : map.entrySet()) {
             Index idx = o.getKey();
@@ -134,13 +116,13 @@ public class TweetComponent extends MVerticalLayout {
                     body.append(originalBody.substring(idx.from, idx.to));
                 }
                 lastIndex = idx.to;
-                System.out.println("After index " + idx.toString() + ": " + body.toString());
+                log.trace("After index {}: {}", idx.toString(), body.toString());
             } else {
-                System.out.println("Maybe invalid index " + idx + ". Last processed index was " + lastIndex);
+                log.trace("Maybe invalid index {}. Last processed index was {}", idx, lastIndex);
             }
         }
         body.append(originalBody.substring(lastIndex));
-        System.out.println("Result: " + body.toString());
+        log.trace("Result: {}", body.toString());
         return body.toString();
     }
 

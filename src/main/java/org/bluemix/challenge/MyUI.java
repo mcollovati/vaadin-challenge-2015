@@ -99,9 +99,9 @@ public class MyUI extends UI {
             Notification.show("Ooops! Something went wrong", t.getMessage(), Notification.Type.ERROR_MESSAGE);
         });
         setResponsive(true);
-        //navigator.navigateTo(StartView.VIEW_NAME);
         doTest();
-        navigator.navigateTo(InsightsView.VIEW_NAME);
+        navigator.navigateTo(StartView.VIEW_NAME);
+        //navigator.navigateTo(InsightsView.VIEW_NAME);
     }
 
 

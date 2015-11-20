@@ -12,12 +12,13 @@ import org.watson.visualinsights.response.Summary;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Created by marco on 19/11/15.
  */
 @Slf4j
-public class VisualInsightChart {
+public class VisualInsightsHelper {
 
     private static Random rand = new Random(0);
     private static final ValoLightTheme theme = new ValoLightTheme();
@@ -25,10 +26,18 @@ public class VisualInsightChart {
     private final static BigDecimal HUNDRED = new BigDecimal(100);
 
 
-    public static Chart draw(List<Summary> data) {
+    public static Chart drawChart(List<Summary> data) {
         Chart chart = new Chart(ChartType.PIE);
+
         Configuration conf = chart.getConfiguration();
         conf.setTitle("Tagging Profile");
+
+        Exporting exporting = new Exporting(true);
+        exporting.setEnableImages(true);
+        exporting.setFilename("VisualInsights");
+        conf.setExporting(exporting);
+        conf.getChart().setBackgroundColor(new SolidColor(255, 255, 255, 0.0));
+
 
         /*
         YAxis yaxis = new YAxis();
@@ -47,7 +56,7 @@ public class VisualInsightChart {
     private static void prepareSeries(List<Summary> data, Chart chart) {
         List<DataSeries> dataSeries = new ArrayList<>();
         DataSeries inner = new DataSeries("");
-        PlotOptionsPie innerPieOptions= new PlotOptionsPie();
+        PlotOptionsPie innerPieOptions = new PlotOptionsPie();
         innerPieOptions.setSize(240);
         inner.setPlotOptions(innerPieOptions);
         innerPieOptions.setDataLabels(new Labels());
@@ -69,21 +78,23 @@ public class VisualInsightChart {
         outer.setPlotOptions(outerPierOptions);
         dataSeries.add(outer);
 
-        data.stream()
-                .filter(s -> BigDecimal.ZERO.compareTo(s.getScore()) < 0)
-                .sorted(Comparator.comparing(Summary::getName))
-                .map(s -> {
-                    Summary newS = new Summary();
-                    newS.setName(s.getName());
-                    newS.setScore(s.getScore().multiply(HUNDRED).setScale(2, BigDecimal.ROUND_HALF_EVEN));
-                    return newS;
-                })
+        filterAndSort(data.stream())
                 .peek(s -> log.debug(s.toString()))
                 .forEach(s -> asDataSeries(s, dataSeries));
         chart.getConfiguration().setSeries(dataSeries.stream().toArray(Series[]::new));
         chart.drawChart();
     }
 
+    public static Stream<Summary> filterAndSort(Stream<Summary> stream) {
+        return stream.filter(s -> BigDecimal.ZERO.compareTo(s.getScore()) < 0)
+                .sorted(Comparator.comparing(Summary::getName))
+                .map(s -> {
+                    Summary newS = new Summary();
+                    newS.setName(s.getName());
+                    newS.setScore(s.getScore().multiply(HUNDRED).setScale(2, BigDecimal.ROUND_HALF_EVEN));
+                    return newS;
+                });
+    }
 
     private static void asDataSeries(Summary s, List<DataSeries> dataSeries) {
         String[] path = s.getName().split("/");
@@ -94,7 +105,7 @@ public class VisualInsightChart {
             innerItem = new DataSeriesItem(path[0], BigDecimal.ZERO, colors[inner.size()]);
             inner.add(innerItem);
         }
-        innerItem.setY( ((BigDecimal)innerItem.getY()).add(s.getScore()) );
+        innerItem.setY(((BigDecimal) innerItem.getY()).add(s.getScore()));
 
         DataSeriesItem outerItem = new DataSeriesItem(path[path.length - 1], s.getScore(), color(innerItem.getColor()));
         dataSeries.get(1).add(outerItem);
