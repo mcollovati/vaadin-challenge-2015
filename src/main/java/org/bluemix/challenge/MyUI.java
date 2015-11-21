@@ -100,8 +100,9 @@ public class MyUI extends UI {
         });
         setResponsive(true);
         doTest();
-        navigator.navigateTo(StartView.VIEW_NAME);
-        //navigator.navigateTo(InsightsView.VIEW_NAME);
+        //navigator.navigateTo(StartView.VIEW_NAME);
+        navigator.navigateTo(InsightsView.VIEW_NAME);
+
     }
 
 

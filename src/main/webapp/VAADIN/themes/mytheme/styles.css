@@ -13894,7 +13894,15 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 15px;
 }
 
-.mytheme .gallery-image {
+.mytheme .tweet .tweet-body {
+	word-break: break-word;
+}
+
+.mytheme .gallery {
+	text-align: center;
+}
+
+.mytheme .gallery .gallery-image {
 	padding: 10px;
 	background-color: #fff;
 	color: #474747;
@@ -13903,16 +13911,20 @@ div.v-layout.v-horizontal.v-widget {
 	width: 30%;
 }
 
-.mytheme .gallery-image.selected {
+.mytheme .gallery .gallery-image.selected {
 	background-color: #197de1;
 	color: #c8dbed;
 }
 
-.mytheme .gallery-image .v-caption {
+.mytheme .gallery .gallery-image:nth-child(3n-2) {
+	margin-left: 0;
+}
+
+.mytheme .gallery .gallery-image .v-caption {
 	width: 100%;
 }
 
-.mytheme .gallery-image .v-caption .v-captiontext {
+.mytheme .gallery .gallery-image .v-caption .v-captiontext {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
@@ -13947,15 +13959,10 @@ div.v-layout.v-horizontal.v-widget {
 	padding-right: 10px;
 }
 
-.mytheme .v-ui[width-range~="0-640"] .v-panel-content-content-layout > .v-layout {
-	padding-right: 24px;
-}
-
 .mytheme .v-ui[width-range~="0-640"] .content-layout .v-horizontallayout-two-columns  > .v-expand > .v-slot {
 	width: 100% !important;
 	height: auto !important;
 	display: block !important;
-	margin-left: 0 !important;
 }
 
 .mytheme .v-ui[width-range~="0-640"] .content-layout .v-horizontallayout-two-columns .upload-container {
@@ -13974,6 +13981,27 @@ div.v-layout.v-horizontal.v-widget {
 
 .mytheme .v-ui[width-range~="0-640"] .insights-view > .v-expand > .v-slot {
 	width: 100% !important;
+	margin-left: -6px !important;
+}
+
+.mytheme .v-ui[width-range~="0-360"] .insights-view .gallery-image {
+	width: 47% !important;
+}
+
+.mytheme .v-ui[width-range~="0-360"] .insights-view .gallery-image:nth-child(odd) {
+	margin-left: 0 !important;
+}
+
+.mytheme .v-ui[width-range~="0-360"] .insights-view .gallery-image:nth-child(even) {
+	margin-left: 12px !important;
+}
+
+.mytheme .v-ui[width-range~="0-540"] .v-horizontallayout-two-columns .v-tabsheet-tabitem .v-captiontext {
+	display: none;
+}
+
+.mytheme .v-ui[width-range~="640-1100"] .v-horizontallayout-two-columns .v-tabsheet-tabitem .v-captiontext {
+	display: none;
 }
 
 .mytheme .v-ui .upload-drop-zone {

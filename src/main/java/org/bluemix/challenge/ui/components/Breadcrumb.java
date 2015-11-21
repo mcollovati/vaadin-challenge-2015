@@ -57,7 +57,8 @@ public class Breadcrumb extends MCssLayout implements ViewChangeListener {
     private MButton breadCrumbButton(Class<? extends View> viewClazz, boolean linked) {
         ViewMenuItem menuItem = viewClazz.getAnnotation(ViewMenuItem.class);
         CDIView cdiView = viewClazz.getAnnotation(CDIView.class);
-        MButton button = new MButton(menuItem.title()).withIcon(menuItem.icon());
+        MButton button = new MButton(menuItem.title()).withIcon(menuItem.icon())
+                .withDescription(menuItem.title());
         if (linked) {
             button.withListener(e -> UI.getCurrent().getNavigator().navigateTo(cdiView.value()));
         }
