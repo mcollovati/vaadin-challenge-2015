@@ -34,6 +34,7 @@ EXPOSE 80
 COPY server.xml /opt/ibm/wlp/usr/servers/defaultServer/
 COPY challenge.war /opt/ibm/wlp/usr/servers/defaultServer/dropins/
 COPY bluemix.pub /root/.ssh/
+COPY .vaadin.charts.developer.license /root/
 RUN cat /root/.ssh/bluemix.pub >> /root/.ssh/authorized_keys
 
 #RUN /opt/ibm/wlp/bin/installUtility install --acceptLicense concurrent-1.0
