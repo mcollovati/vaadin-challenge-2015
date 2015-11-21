@@ -61,6 +61,9 @@ public class MyUI extends UI {
     @Inject
     protected ImageStorage imageStorage;
 
+    @Inject
+    protected Breadcrumb breadcrumb;
+
     @Override
     protected void init(VaadinRequest request) {
 
@@ -71,7 +74,7 @@ public class MyUI extends UI {
         contentLayout.addStyleName(ValoTheme.LAYOUT_WELL);
         contentLayout.setSizeFull();
 
-        Breadcrumb breadcrumb = new Breadcrumb();
+        //Breadcrumb breadcrumb = new Breadcrumb();
 
         MVerticalLayout mainLayout = new MVerticalLayout(breadcrumb)
                 .expand(contentLayout).withStyleName("main-layout");
@@ -99,14 +102,18 @@ public class MyUI extends UI {
             Notification.show("Ooops! Something went wrong", t.getMessage(), Notification.Type.ERROR_MESSAGE);
         });
         setResponsive(true);
-        doTest();
-        //navigator.navigateTo(StartView.VIEW_NAME);
-        navigator.navigateTo(InsightsView.VIEW_NAME);
+        if (request.getParameter("test") != null) {
+            doTest();
+        }
+
+        navigator.navigateTo(StartView.VIEW_NAME);
+        //navigator.navigateTo(InsightsView.VIEW_NAME);
 
     }
 
 
     private void doTest() {
+
         try {
             for (Path p : Files.list(Paths.get("/tmp", "gallery")).toArray(Path[]::new)) {
                 ImageResource res = imageStorage.createResource(p.getFileName().toString()).get();
