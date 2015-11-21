@@ -16,7 +16,10 @@ public interface ImageResource extends Serializable {
         public int read() throws IOException {
             return -1;
         }
+
     };
+
+    String size();
 
     String getDescription();
 

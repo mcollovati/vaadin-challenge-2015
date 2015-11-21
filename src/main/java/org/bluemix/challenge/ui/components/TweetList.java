@@ -25,15 +25,15 @@ import static java.util.stream.Collectors.toList;
 /**
  * @author Marco Collovati
  */
-public class TweetList extends Panel {
+public class TweetList extends MVerticalLayout { //extends Panel {
 
     private static final Comparator<Tweet> TWEET_COMPARATOR =
             Comparator.comparingLong( (Tweet t) -> t.getMessage().getPostedTime().getTime() )
                 .reversed();
-    MVerticalLayout content = new MVerticalLayout().withMargin(new MMarginInfo(true,false)).withFullWidth();
+    ////MVerticalLayout content = new MVerticalLayout().withMargin(new MMarginInfo(true,false)).withFullWidth();
 
     BeanItemContainer<Tweet> tweetsContainer = new BeanItemContainer<Tweet>(Tweet.class);
-    MTable<Tweet> tweetsTable = new MTable<>();
+    MTable<Tweet> tweetsTable = new MTable<>(Tweet.class).withFullWidth();
     Label query = new Label();
 
     @Getter
@@ -41,11 +41,13 @@ public class TweetList extends Panel {
 
 
     public TweetList() {
+        MVerticalLayout content = this.withFullWidth().withMargin(false);
+
         setSizeFull();
         addStyleName("tweet-list");
         content.setDefaultComponentAlignment(Alignment.TOP_CENTER);
-        setContent(content);
-        setCaption("IBM Insights for Twitter");
+        ////setContent(content);
+        ////setCaption("IBM Insights for Twitter");
         initTweetGrid();
 
         query.addStyleName(ValoTheme.LABEL_BOLD);
@@ -67,6 +69,8 @@ public class TweetList extends Panel {
         tweetsTable.setFooterVisible(false);
         tweetsTable.addGeneratedColumn("body", (Table.ColumnGenerator) (source, itemId, columnId) -> new TweetComponent((Tweet)itemId).withMargin(false));
         tweetsTable.setVisibleColumns("body");
+        tweetsTable.setPageLength(0);
+        ////tweetsTable.setHeight("100%");
 
     }
 

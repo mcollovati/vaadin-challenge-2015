@@ -3,14 +3,13 @@ package org.bluemix.challenge.ui.components;
 import com.google.common.base.Strings;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.server.Scrollable;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.TreeTable;
 import org.watson.visualinsights.response.Summary;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
@@ -42,11 +41,11 @@ public class VisualInsightsTable extends TreeTable {
     }
 
     @Override
-    public Object getConvertedValue() {
+    public Set<String> getConvertedValue() {
         return Optional.ofNullable(getValue())
                 .map(v -> (Set<String>) v)
                 .map(set -> set.stream().map(tag -> Stream.of(tag.split("/")).reduce("", (s1, s2) -> s2)).collect(toSet()))
-                .orElse(null);
+                .orElse(Collections.emptySet());
     }
 
     public void empty() {
@@ -90,4 +89,5 @@ public class VisualInsightsTable extends TreeTable {
             parentItemId = itemId;
         }
     }
+
 }

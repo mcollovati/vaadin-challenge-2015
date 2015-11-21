@@ -97,6 +97,7 @@ public class TweetComponent extends MVerticalLayout {
         }
 
         log.trace("ORIGINAL: {}", originalBody);
+        originalBody = originalBody.replaceFirst("^#", "&#35;");
         int lastIndex = 0;
         for (Map.Entry<Index, Object> o : map.entrySet()) {
             Index idx = o.getKey();
@@ -122,7 +123,7 @@ public class TweetComponent extends MVerticalLayout {
             }
         }
         body.append(originalBody.substring(lastIndex));
-        log.trace("Result: {}", body.toString());
+        log.debug("Result: {}", body.toString());
         return body.toString();
     }
 

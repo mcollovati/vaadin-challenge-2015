@@ -131,31 +131,44 @@
       .tweet-author-image {
         border-radius: 15px;
       }
+
+      .tweet-body {
+        word-break: break-word;
+      }
   }
 
-  .gallery-image {
-    padding: 10px;
-    background-color: #fff;
-    color: valo-font-color(#fff);
+  .gallery {
+    text-align: center;
 
-    box-shadow: 0 0 5px #ddd;
-    margin: 0 0 2.5% 2.5%;
-    width: 30%;
+      .gallery-image {
+        padding: 10px;
+        background-color: #fff;
+        color: valo-font-color(#fff);
 
-    &.selected {
-        background-color: $v-selection-color;
-        color: valo-font-color($v-selection-color);
-    }
-    .v-caption {
-        width: 100%;
+        box-shadow: 0 0 5px #ddd;
+        margin: 0 0 2.5% 2.5%;
+        width: 30%;
 
-        .v-captiontext {
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-            display: block;
+        &.selected {
+            background-color: $v-selection-color;
+            color: valo-font-color($v-selection-color);
         }
-    }
+        &:nth-child(3n-2) {
+            margin-left:0;
+        }
+        .v-caption {
+            width: 100%;
+
+            .v-captiontext {
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                display: block;
+            }
+        }
+
+      }
+
   }
 
   .v-ui {
@@ -182,6 +195,7 @@
             }
         }
 
+
       .main-layout {
         padding-top: 10px;
         padding-left: 10px;
@@ -189,7 +203,7 @@
       }
 
        .v-panel-content-content-layout > .v-layout {
-            padding-right: 24px;
+            /* padding-right: 24px; */
        }
 
       .content-layout .v-horizontallayout-two-columns {
@@ -197,7 +211,6 @@
           width: 100% !important;
           height: auto !important;
           display: block !important;
-          margin-left: 0 !important;
         }
 
         .upload-container {
@@ -218,9 +231,33 @@
 
       .insights-view > .v-expand > .v-slot {
         width: 100% !important;
+        margin-left: -6px !important;
       }
 
   }
+
+    @include width-range(0,360){
+      .insights-view .gallery-image {
+        width: 47% !important;
+        &:nth-child(odd) {
+            margin-left:0 !important;
+        }
+        &:nth-child(even) {
+            margin-left: 12px !important;
+        }
+      }
+    }
+
+    @include width-range(0,540){
+        .v-horizontallayout-two-columns .v-tabsheet-tabitem .v-captiontext {
+            display:none;
+        }
+    }
+    @include width-range(640,1100){
+        .v-horizontallayout-two-columns .v-tabsheet-tabitem .v-captiontext {
+            display:none;
+        }
+    }
 
   // Insert your own theme rules here
   .upload-drop-zone {

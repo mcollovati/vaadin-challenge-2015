@@ -34,8 +34,12 @@ public class FileImageResource implements ImageResource {
 
     @Override
     public String getDescription() {
-        return String.format("%s (%s)", fileName,
-                FileUtils.byteCountToDisplaySize(resource.toAbsolutePath().toFile().length()));
+        return fileName;
+    }
+
+    @Override
+    public String size() {
+        return FileUtils.byteCountToDisplaySize(resource.toAbsolutePath().toFile().length());
     }
 
     @Override
