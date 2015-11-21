@@ -100,4 +100,9 @@ public class FileImageStorage implements ImageStorage {
         }
 
     }
+
+    @Override
+    public boolean isEmpty() {
+        return getResources().isEmpty();
+    }
 }

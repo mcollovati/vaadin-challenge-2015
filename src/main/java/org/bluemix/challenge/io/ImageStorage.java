@@ -14,4 +14,6 @@ public interface ImageStorage {
     void destroy(ImageResource resource);
 
     void destroy();
+
+    boolean isEmpty();
 }

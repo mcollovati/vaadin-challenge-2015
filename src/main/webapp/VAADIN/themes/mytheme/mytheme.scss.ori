@@ -64,15 +64,6 @@
     }
   }
 
-    .breadcrumb-btn:not(.disabled) + .breadcrumb-btn-spacer.v-disabled {
-        opacity: 1 !important;
-    }
-    .breadcrumb-btn:not(.disabled):hover:after + .breadcrumb-btn-spacer.v-disabled  {
-        background-color: rgba(186, 186, 186, 0.1);
-    }
-    .breadcrumb-btn.v-disabled + .breadcrumb-btn-spacer.v-disabled:after {
-        border-left-color: rgb(253,253,253);
-    }
 
   .breadcrumb-btn-spacer {
     $breadcrumb-unit-size: 38px;
@@ -106,12 +97,6 @@
       display: inline-block !important;
     }
 
-    &.breadcrumb-btn-friendly:before {
-      border-left: valo-border($border: 10px solid, $color: $v-friendly-color);
-    }
-    &.breadcrumb-btn-friendly:after {
-      border-left: valo-border($border: 10px solid $v-friendly-color);
-    }
     &.breadcrumb-btn-friendly:before {
       border-left: valo-border($border: 10px solid, $color: $v-friendly-color);
     }

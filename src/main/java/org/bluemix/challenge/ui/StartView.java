@@ -25,7 +25,7 @@ public class StartView extends MVerticalLayout implements View{
         withMargin(true).withFullWidth();
         setStyleName("start-view");
         addComponent(new RichText().withMarkDown(getClass().getResourceAsStream("start.md")));
-        addComponent(new PrimaryButton("Clicke here to start",
+        addComponent(new PrimaryButton("Start here",
                 event -> UI.getCurrent().getNavigator().navigateTo(UploadView.VIEW_NAME)));
         expand(new CssLayout());
         setHeightUndefined();
