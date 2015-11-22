@@ -12,6 +12,7 @@ import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.server.VaadinCDIServletService;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.*;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
@@ -26,6 +27,7 @@ import org.bluemix.challenge.ui.ErrorView;
 import org.bluemix.challenge.ui.InsightsView;
 import org.bluemix.challenge.ui.StartView;
 import org.bluemix.challenge.ui.components.Breadcrumb;
+import org.bluemix.challenge.ui.components.Scroller;
 import org.vaadin.viewportservlet.ViewPortCDIServlet;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
@@ -63,6 +65,8 @@ public class MyUI extends UI {
 
     @Inject
     protected Breadcrumb breadcrumb;
+
+    private Scroller scroller;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -105,12 +109,22 @@ public class MyUI extends UI {
         if (request.getParameter("test") != null) {
             doTest();
         }
-
+        scroller = Scroller.applyTo(this);
         navigator.navigateTo(StartView.VIEW_NAME);
         //navigator.navigateTo(InsightsView.VIEW_NAME);
 
     }
 
+    @Override
+    public void scrollIntoView(Component component) throws IllegalArgumentException {
+        if (getPage().getWebBrowser().isTouchDevice()) {
+            scroller.ensureVisible(component);
+        }
+        // Scroll only for mobile devices
+        // else {
+            //super.scrollIntoView(component);
+        //}
+    }
 
     private void doTest() {
 

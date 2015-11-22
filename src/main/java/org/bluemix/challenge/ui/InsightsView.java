@@ -21,7 +21,6 @@ import org.bluemix.challenge.events.VisualInsightsFailedEvent;
 import org.bluemix.challenge.events.VisualInsightsSuccededEvent;
 import org.bluemix.challenge.io.ImageResource;
 import org.bluemix.challenge.io.ImageStorage;
-import org.bluemix.challenge.ui.components.ScrollableTargetWrapper;
 import org.bluemix.challenge.ui.components.TweetList;
 import org.bluemix.challenge.ui.components.VisualInsightsChart;
 import org.bluemix.challenge.ui.components.VisualInsightsTable;
@@ -155,7 +154,7 @@ public class InsightsView extends MHorizontalLayout implements View {
         });
 
 
-        insights = new TabSheet() {
+        insights = new TabSheet(); /* {
 
             private Component findTabComponent(Component component) {
                 return ScrollableTargetWrapper.wrapperFor(component)
@@ -171,20 +170,22 @@ public class InsightsView extends MHorizontalLayout implements View {
             public void setSelectedTab(Component c) {
                 super.setSelectedTab(findTabComponent(c));
             }
-        };
+        };*/
         insights.setStyleName(ValoTheme.TABSHEET_CENTERED_TABS);
-        //insights.setSizeFull();
         insights.setWidth("100%");
 
 
 
-        TabSheet.Tab tab = insights.addTab(new ScrollableTargetWrapper<>(visualInsightsTable), "Visual Insights");
+        //TabSheet.Tab tab = insights.addTab(new ScrollableTargetWrapper<>(visualInsightsTable), "Visual Insights");
+        TabSheet.Tab tab = insights.addTab(visualInsightsTable, "Visual Insights");
         tab.setEnabled(false);
         tab.setIcon(FontAwesome.LIST_ALT);
-        tab = insights.addTab(new ScrollableTargetWrapper<>(visualInsightsChart), "Visual Insights chart");
+        //tab = insights.addTab(new ScrollableTargetWrapper<>(visualInsightsChart), "Visual Insights chart");
+        tab = insights.addTab(visualInsightsChart, "Visual Insights chart");
         tab.setEnabled(false);
         tab.setIcon(FontAwesome.BAR_CHART_O);
-        tab = insights.addTab(new ScrollableTargetWrapper<>(tweetList), "IBM Twitter Insights");
+        //tab = insights.addTab(new ScrollableTargetWrapper<>(tweetList), "IBM Twitter Insights");
+        tab = insights.addTab(tweetList, "IBM Twitter Insights");
         tab.setEnabled(false);
         tab.setIcon(FontAwesome.TWITTER_SQUARE);
 
@@ -244,9 +245,10 @@ public class InsightsView extends MHorizontalLayout implements View {
         insights.getTab(visualInsightsTable).setEnabled(true);
         insights.getTab(visualInsightsChart).setEnabled(true);
         insights.setSelectedTab(visualInsightsTable);
-        visualInsightsTable.focus();
-        ScrollableTargetWrapper.scrollTo(visualInsightsTable);
+        ////visualInsightsTable.focus();
+        ////ScrollableTargetWrapper.scrollTo(visualInsightsTable);
         //getUI().scrollIntoView(messageLabel);
+        getUI().scrollIntoView(insights);
 
     }
 
@@ -266,7 +268,8 @@ public class InsightsView extends MHorizontalLayout implements View {
         tweetList.setTweets(event.getTweets());
         toggleAllTabs(true);
         insights.setSelectedTab(tweetList);
-        ScrollableTargetWrapper.scrollTo(tweetList);
+        //ScrollableTargetWrapper.scrollTo(tweetList);
+        getUI().scrollIntoView(insights);
     }
 
     @UIUpdate

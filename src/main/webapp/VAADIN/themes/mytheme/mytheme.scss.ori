@@ -64,6 +64,15 @@
     }
   }
 
+    .breadcrumb-btn:not(.disabled) + .breadcrumb-btn-spacer.v-disabled {
+        opacity: 1 !important;
+    }
+    .breadcrumb-btn:not(.disabled):hover:after + .breadcrumb-btn-spacer.v-disabled  {
+        background-color: rgba(186, 186, 186, 0.1);
+    }
+    .breadcrumb-btn.v-disabled + .breadcrumb-btn-spacer.v-disabled:after {
+        border-left-color: rgb(253,253,253);
+    }
 
   .breadcrumb-btn-spacer {
     $breadcrumb-unit-size: 38px;
@@ -97,6 +106,12 @@
       display: inline-block !important;
     }
 
+    &.breadcrumb-btn-friendly:before {
+      border-left: valo-border($border: 10px solid, $color: $v-friendly-color);
+    }
+    &.breadcrumb-btn-friendly:after {
+      border-left: valo-border($border: 10px solid $v-friendly-color);
+    }
     &.breadcrumb-btn-friendly:before {
       border-left: valo-border($border: 10px solid, $color: $v-friendly-color);
     }
@@ -171,6 +186,23 @@
 
   }
 
+  .two-columns .v-tabsheet-tabsheetpanel > .v-scrollable {
+      padding-top: 10px;
+  }
+
+  .recognition-view {
+    .visual-recognition-table {
+        .label-rating {
+            $label-rating-color: rgb(249, 221, 81);
+
+            color: $label-rating-color;
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+            @include valo-tappable();
+        }
+    }
+  }
+
+
   .v-ui {
     background-color: white;
 
@@ -197,9 +229,7 @@
 
 
       .main-layout {
-        padding-top: 10px;
-        padding-left: 10px;
-        padding-right: 10px;
+        padding: 10px;
       }
 
        .v-panel-content-content-layout > .v-layout {
@@ -218,18 +248,10 @@
         }
       }
 
-      .recognition-view .results {
-        .v-expand {
-            padding-left: 0px !important;
-        }
-        .v-slot {
-          width: 100% !important;
-          display: block !important;
-          margin-left: 0px !important;
-        }
+      .v-horizontallayout-two-columns > .v-expand > .v-spacing {
+        display: block;
       }
-
-      .insights-view > .v-expand > .v-slot {
+      .v-horizontallayout-two-columns > .v-expand > .v-slot {
         width: 100% !important;
         margin-left: -6px !important;
       }
@@ -237,6 +259,7 @@
   }
 
     @include width-range(0,360){
+
       .insights-view .gallery-image {
         width: 47% !important;
         &:nth-child(odd) {
@@ -279,7 +302,7 @@
     @include valo-animate-in-slide-left;
   }
   .view-in {
-    @include valo-animate-in-slide-right($delay: 400ms);
+    @include valo-animate-in-slide-right($delay: 200ms);
   }
 
 

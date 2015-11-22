@@ -1,5 +1,6 @@
 package org.bluemix.challenge.ui.components;
 
+import com.vaadin.server.Page;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
@@ -37,6 +38,13 @@ public class ScrollableTargetWrapper<T extends Component> extends CustomComponen
         }
     }
 
+    @Override
+    public void attach() {
+        Page.getCurrent().getJavaScript().addFunction("org.bluemix.challenge.scrollTo", arguments -> {
+
+        });
+        super.attach();
+    }
 
     public static void scrollTo(Component component) {
         wrapperFor(component).ifPresent(ScrollableTargetWrapper::scroll);
