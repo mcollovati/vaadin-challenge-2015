@@ -41,6 +41,7 @@ public class TweetList extends MVerticalLayout { //extends Panel {
 
 
     public TweetList() {
+        addStyleName("twitter-insights-results");
         MVerticalLayout content = this.withFullWidth().withMargin(false);
 
         setSizeFull();
@@ -75,7 +76,7 @@ public class TweetList extends MVerticalLayout { //extends Panel {
     }
 
     public void searchStarted(Set<String> tags)  {
-        query.setValue(String.format("Tweets (limit %d) containing keywords: %s", tweetLimit, String.join(" ", tags)));
+        query.setValue(String.format("Tweets containing keywords: %s. (Only first %d are shown)", String.join(", ", tags), tweetLimit));
         //content.removeAllComponents();
         //content.add(new Spinner(SpinnerType.THREE_BOUNCE));
         //setContent(new Spinner(SpinnerType.THREE_BOUNCE));

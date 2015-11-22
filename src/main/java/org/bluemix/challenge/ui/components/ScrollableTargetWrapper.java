@@ -32,6 +32,9 @@ public class ScrollableTargetWrapper<T extends Component> extends CustomComponen
     public void scroll() {
         //getUI().scrollIntoView(wrapped);
         getUI().scrollIntoView(anchor);
+        if (anchor instanceof Focusable) {
+            ((Focusable)anchor).focus();
+        }
     }
 
 

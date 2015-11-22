@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -31,8 +32,10 @@ public class VisualRecognitionTable extends Grid {
 
     BeanItemContainer<Label> container = new BeanItemContainer<>(Label.class);
 
-    public VisualRecognitionTable() {
+    public static final String STARS_COLUMN = "labelStars";
 
+    public VisualRecognitionTable() {
+        addStyleName("visual-recognition-table");
         GeneratedPropertyContainer containerWrapper = new GeneratedPropertyContainer(container);
         containerWrapper.addGeneratedProperty("labelStars", new PropertyValueGenerator<Integer>() {
             @Override
@@ -51,23 +54,22 @@ public class VisualRecognitionTable extends Grid {
         getColumn("labelName").setHeaderCaption("Label").setExpandRatio(1);
         getColumn("labelScore").setHeaderCaption("Score")
                 .setRenderer(new NumberRenderer("%.2f"));
-        getColumn("labelStars").setHeaderCaption("")
+        getColumn(STARS_COLUMN).setHeaderCaption("")
                 .setRenderer(new HtmlRenderer(), new StringToIntegerConverter() {
                     @Override
                     public String convertToPresentation(Integer value, Class<? extends String> targetType, Locale locale) throws ConversionException {
 
                         return IntStream.range(0, 5).mapToObj(i -> (i <= value / 2) ? FontAwesome.STAR : FontAwesome.STAR_O)
                                 .map(FontAwesome::getHtml)
-                                .reduce(String::concat).orElse("");
+                                .collect(Collectors.joining("","<div class=\"label-rating\">","</div>"));
+                                //.reduce(String::concat).orElse("");
                     }
                 });
         setFooterVisible(false);
         setColumnReorderingAllowed(false);
-        //withProperties("labelName", "labelScore");
-        //withColumnHeaders("Label", "Score");
-        //setSelectable(true);
         setSelectionMode(SelectionMode.SINGLE);
         setImmediate(true);
+        setHeightMode(HeightMode.ROW);
     }
 
     public void withImageResponse(Image response) {
@@ -75,10 +77,12 @@ public class VisualRecognitionTable extends Grid {
         if (labels == null) {
             labels = new ArrayList<>();
         }
+        setHeightByRows(labels.size());
         container.removeAllItems();
         container.addAll(labels);
+
         //setBeans(labels);
-        markAsDirty();
+        //markAsDirty();
     }
 
     public void clearTable() {

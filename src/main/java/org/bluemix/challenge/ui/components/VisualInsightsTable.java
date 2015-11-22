@@ -24,6 +24,7 @@ public class VisualInsightsTable extends TreeTable {
     private static final String SCORE_PROPERTY = "score";
 
     public VisualInsightsTable() {
+        addStyleName("visual-insights-table");
         setSelectable(true);
         setMultiSelect(true);
 
