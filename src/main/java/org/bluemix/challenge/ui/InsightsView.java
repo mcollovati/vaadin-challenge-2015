@@ -181,7 +181,7 @@ public class InsightsView extends MHorizontalLayout implements View {
         TabSheet.Tab tab = insights.addTab(new ScrollableTargetWrapper<>(visualInsightsTable), "Visual Insights");
         tab.setEnabled(false);
         tab.setIcon(FontAwesome.LIST_ALT);
-        tab = insights.addTab(visualInsightsChart, "Visual Insights chart");
+        tab = insights.addTab(new ScrollableTargetWrapper<>(visualInsightsChart), "Visual Insights chart");
         tab.setEnabled(false);
         tab.setIcon(FontAwesome.BAR_CHART_O);
         tab = insights.addTab(new ScrollableTargetWrapper<>(tweetList), "IBM Twitter Insights");

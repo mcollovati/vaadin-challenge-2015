@@ -13982,9 +13982,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .mytheme .v-ui[width-range~="0-640"] .main-layout {
-	padding-top: 10px;
-	padding-left: 10px;
-	padding-right: 10px;
+	padding: 10px;
 }
 
 .mytheme .v-ui[width-range~="0-640"] .content-layout .v-horizontallayout-two-columns  > .v-expand > .v-slot {

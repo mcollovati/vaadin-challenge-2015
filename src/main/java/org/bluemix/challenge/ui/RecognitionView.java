@@ -16,6 +16,8 @@ import org.bluemix.challenge.events.TweetsQueryFailedEvent;
 import org.bluemix.challenge.events.TweetsQuerySuccededEvent;
 import org.bluemix.challenge.events.UploadCompletedEvent;
 import org.bluemix.challenge.events.UploadStartedEvent;
+import org.bluemix.challenge.ui.components.ScrollableTabSheet;
+import org.bluemix.challenge.ui.components.ScrollableTargetWrapper;
 import org.bluemix.challenge.ui.components.TweetList;
 import org.bluemix.challenge.ui.components.VisualRecognitionTable;
 import org.vaadin.cdiviewmenu.ViewMenuItem;
@@ -75,7 +77,7 @@ public class RecognitionView extends MHorizontalLayout implements View, Page.Bro
         message.setStyleName("progress-message");
         message.addStyleName(ValoTheme.LABEL_COLORED);
 
-        tabSheet = new TabSheet();
+        tabSheet = new ScrollableTabSheet();
         tabSheet.addSelectedTabChangeListener( e -> {
             // awful workaround
             Page.getCurrent().getJavaScript().execute("setTimeout(vaadin.forceLayout, 200);");
@@ -109,9 +111,9 @@ public class RecognitionView extends MHorizontalLayout implements View, Page.Bro
         );
 
 
-        TabSheet.Tab tab = tabSheet.addTab(uploadedImage, "Uploaded Image", FontAwesome.IMAGE);
+        TabSheet.Tab tab = tabSheet.addTab(new ScrollableTargetWrapper<>(uploadedImage), "Uploaded Image", FontAwesome.IMAGE);
         tab.setEnabled(false);
-        tab = tabSheet.addTab(recognitionResults, "Visual recognition", FontAwesome.LIST_ALT);
+        tab = tabSheet.addTab(new ScrollableTargetWrapper<>(recognitionResults), "Visual recognition", FontAwesome.LIST_ALT);
         tab.setEnabled(false);
     }
 
@@ -172,7 +174,8 @@ public class RecognitionView extends MHorizontalLayout implements View, Page.Bro
         uploadImageBtn.setVisible(true);
         insightsBtn.setVisible(true);
 
-        getUI().scrollIntoView(recognitionResults);
+        //getUI().scrollIntoView(recognitionResults);
+        ScrollableTargetWrapper.scrollTo(recognitionResults);
     }
 
 
@@ -202,7 +205,8 @@ public class RecognitionView extends MHorizontalLayout implements View, Page.Bro
         message.setValue("Upload completed. Starting visual recognition");
         message.setStyleName(ValoTheme.LABEL_SUCCESS);
         spinner.setVisible(true);
-        getUI().scrollIntoView(uploadedImage);
+        //getUI().scrollIntoView(uploadedImage);
+        ScrollableTargetWrapper.scrollTo(uploadedImage);
     }
 
     void doRecognition(@Observes UploadCompletedEvent eventFile) {
