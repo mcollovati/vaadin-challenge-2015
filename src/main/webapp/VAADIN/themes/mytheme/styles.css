@@ -13951,6 +13951,10 @@ div.v-layout.v-horizontal.v-widget {
 	display: block;
 }
 
+.mytheme .two-columns .v-tabsheet-tabsheetpanel > .v-scrollable {
+	padding-top: 10px;
+}
+
 .mytheme .recognition-view .visual-recognition-table .label-rating {
 	color: #f9dd51;
 	text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
@@ -13967,39 +13971,33 @@ div.v-layout.v-horizontal.v-widget {
 	height: auto !important;
 }
 
-.mytheme .v-ui[height-range~="0-360"] .main-layout {
-	padding-top: 10px;
-	padding-left: 10px;
-	padding-right: 10px;
-}
-
-.mytheme .v-ui[width-range~="0-640"] .breadcrumb-btn {
+.mytheme .v-ui[width-range~="0-580"] .breadcrumb-btn {
 	min-width: auto;
 }
 
-.mytheme .v-ui[width-range~="0-640"] .breadcrumb-btn .breadcrumb-btn-caption {
+.mytheme .v-ui[width-range~="0-580"] .breadcrumb-btn .breadcrumb-btn-caption {
 	display: none;
 }
 
-.mytheme .v-ui[width-range~="0-640"] .main-layout {
+.mytheme .v-ui[width-range~="0-800"] .main-layout {
 	padding: 10px;
 }
 
-.mytheme .v-ui[width-range~="0-640"] .content-layout .v-horizontallayout-two-columns  > .v-expand > .v-slot {
+.mytheme .v-ui[width-range~="0-800"] .content-layout .v-horizontallayout-two-columns  > .v-expand > .v-slot {
 	width: 100% !important;
 	height: auto !important;
 	display: block !important;
 }
 
-.mytheme .v-ui[width-range~="0-640"] .content-layout .v-horizontallayout-two-columns .upload-container {
+.mytheme .v-ui[width-range~="0-800"] .content-layout .v-horizontallayout-two-columns .upload-container {
 	padding: 0;
 }
 
-.mytheme .v-ui[width-range~="0-640"] .v-horizontallayout-two-columns > .v-expand > .v-spacing {
+.mytheme .v-ui[width-range~="0-800"] .v-horizontallayout-two-columns > .v-expand > .v-spacing {
 	display: block;
 }
 
-.mytheme .v-ui[width-range~="0-640"] .v-horizontallayout-two-columns > .v-expand > .v-slot {
+.mytheme .v-ui[width-range~="0-800"] .v-horizontallayout-two-columns > .v-expand > .v-slot {
 	width: 100% !important;
 	margin-left: -6px !important;
 }
@@ -14020,7 +14018,7 @@ div.v-layout.v-horizontal.v-widget {
 	display: none;
 }
 
-.mytheme .v-ui[width-range~="640-1100"] .v-horizontallayout-two-columns .v-tabsheet-tabitem .v-captiontext {
+.mytheme .v-ui[width-range~="800-1100"] .v-horizontallayout-two-columns .v-tabsheet-tabitem .v-captiontext {
 	display: none;
 }
 
@@ -14044,7 +14042,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .mytheme .view-in {
-	-webkit-animation: valo-animate-in-slide-right 400ms 400ms backwards;
-	-moz-animation: valo-animate-in-slide-right 400ms 400ms backwards;
-	animation: valo-animate-in-slide-right 400ms 400ms backwards;
+	-webkit-animation: valo-animate-in-slide-right 400ms 200ms backwards;
+	-moz-animation: valo-animate-in-slide-right 400ms 200ms backwards;
+	animation: valo-animate-in-slide-right 400ms 200ms backwards;
 }

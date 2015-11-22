@@ -16,10 +16,7 @@ import org.bluemix.challenge.events.TweetsQueryFailedEvent;
 import org.bluemix.challenge.events.TweetsQuerySuccededEvent;
 import org.bluemix.challenge.events.UploadCompletedEvent;
 import org.bluemix.challenge.events.UploadStartedEvent;
-import org.bluemix.challenge.ui.components.ScrollableTabSheet;
-import org.bluemix.challenge.ui.components.ScrollableTargetWrapper;
-import org.bluemix.challenge.ui.components.TweetList;
-import org.bluemix.challenge.ui.components.VisualRecognitionTable;
+import org.bluemix.challenge.ui.components.*;
 import org.vaadin.cdiviewmenu.ViewMenuItem;
 import org.vaadin.spinkit.Spinner;
 import org.vaadin.spinkit.SpinnerType;
@@ -77,10 +74,12 @@ public class RecognitionView extends MHorizontalLayout implements View, Page.Bro
         message.setStyleName("progress-message");
         message.addStyleName(ValoTheme.LABEL_COLORED);
 
-        tabSheet = new ScrollableTabSheet();
+        tabSheet = new TabSheet();
         tabSheet.addSelectedTabChangeListener( e -> {
             // awful workaround
-            Page.getCurrent().getJavaScript().execute("setTimeout(vaadin.forceLayout, 200);");
+            if (tabSheet.getSelectedTab() == recognitionResults) {
+                Page.getCurrent().getJavaScript().execute("setTimeout(vaadin.forceLayout, 100);");
+            }
         });
         tabSheet.setStyleName(ValoTheme.TABSHEET_CENTERED_TABS);
         tabSheet.setWidth("100%");
@@ -111,9 +110,9 @@ public class RecognitionView extends MHorizontalLayout implements View, Page.Bro
         );
 
 
-        TabSheet.Tab tab = tabSheet.addTab(new ScrollableTargetWrapper<>(uploadedImage), "Uploaded Image", FontAwesome.IMAGE);
+        TabSheet.Tab tab = tabSheet.addTab(uploadedImage, "Uploaded Image", FontAwesome.IMAGE);
         tab.setEnabled(false);
-        tab = tabSheet.addTab(new ScrollableTargetWrapper<>(recognitionResults), "Visual recognition", FontAwesome.LIST_ALT);
+        tab = tabSheet.addTab(recognitionResults, "Visual recognition", FontAwesome.LIST_ALT);
         tab.setEnabled(false);
     }
 
@@ -153,11 +152,6 @@ public class RecognitionView extends MHorizontalLayout implements View, Page.Bro
         tabSheet.getTab(recognitionResults).setEnabled(false);
 
         spinner.setVisible(false);
-
-        /*
-        tweetList.setVisible(false);
-        uploadImageBtn.setVisible(false);
-        */
         insightsBtn.setVisible(false);
     }
 
@@ -175,7 +169,10 @@ public class RecognitionView extends MHorizontalLayout implements View, Page.Bro
         insightsBtn.setVisible(true);
 
         //getUI().scrollIntoView(recognitionResults);
-        ScrollableTargetWrapper.scrollTo(recognitionResults);
+        ////ScrollableTargetWrapper.scrollTo(recognitionResults);
+        //////Scroller.current().ensureVisible(recognitionResults);
+        getUI().scrollIntoView(uploadImageBtn.getParent());
+        tabSheet.focus();
     }
 
 
@@ -206,7 +203,9 @@ public class RecognitionView extends MHorizontalLayout implements View, Page.Bro
         message.setStyleName(ValoTheme.LABEL_SUCCESS);
         spinner.setVisible(true);
         //getUI().scrollIntoView(uploadedImage);
-        ScrollableTargetWrapper.scrollTo(uploadedImage);
+        ////ScrollableTargetWrapper.scrollTo(uploadedImage);
+        ////Scroller.current().ensureVisible(uploadedImage);
+        getUI().scrollIntoView(tabSheet);
     }
 
     void doRecognition(@Observes UploadCompletedEvent eventFile) {
@@ -216,14 +215,15 @@ public class RecognitionView extends MHorizontalLayout implements View, Page.Bro
 
     @Override
     public void browserWindowResized(Page.BrowserWindowResizeEvent event) {
-        if (event.getWidth() <= 380) {
+        if (event.getWidth() <= 480 || event.getWidth() >= 800 && event.getWidth() <= 960) {
             uploadImageBtn.setCaption("Upload");
             insightsBtn.setCaption("Insights");
-            recognitionResults.getColumn(VisualRecognitionTable.STARS_COLUMN).setHidden(true);
+            //recognitionResults.getColumn(VisualRecognitionTable.STARS_COLUMN).setHidden(true);
         } else {
             uploadImageBtn.setCaption("Upload another image");
             insightsBtn.setCaption("Proceed to Insights");
-            recognitionResults.getColumn(VisualRecognitionTable.STARS_COLUMN).setHidden(false);
+            //recognitionResults.getColumn(VisualRecognitionTable.STARS_COLUMN).setHidden(false);
         }
+        recognitionResults.getColumn(VisualRecognitionTable.STARS_COLUMN).setHidden(event.getWidth() <= 480);
     }
 }

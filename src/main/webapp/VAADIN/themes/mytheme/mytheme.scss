@@ -186,6 +186,10 @@
 
   }
 
+  .two-columns .v-tabsheet-tabsheetpanel > .v-scrollable {
+      padding-top: 10px;
+  }
+
   .recognition-view {
     .visual-recognition-table {
         .label-rating {
@@ -206,15 +210,15 @@
       height: auto !important;
     }
 
+    /*
     @include height-range(0,360){
       .main-layout {
-        padding-top: 10px;
-        padding-left: 10px;
-        padding-right: 10px;
+        padding: 10px;
       }
     }
+    */
 
-    @include width-range(0,640){
+    @include width-range(0,580){
         .breadcrumb-btn {
             min-width: auto;
 
@@ -222,15 +226,14 @@
                 display: none;
             }
         }
+    }
 
+    @include width-range(0,800){
 
       .main-layout {
         padding: 10px;
       }
 
-       .v-panel-content-content-layout > .v-layout {
-            /* padding-right: 24px; */
-       }
 
       .content-layout .v-horizontallayout-two-columns {
         > .v-expand > .v-slot {
@@ -244,25 +247,9 @@
         }
       }
 
-
-/*
-      .recognition-view .results {
-        .v-expand {
-            padding-left: 0px !important;
-        }
-        .v-slot {
-          width: 100% !important;
-          display: block !important;
-          margin-left: 0px !important;
-        }
-
-      }
-*/
       .v-horizontallayout-two-columns > .v-expand > .v-spacing {
         display: block;
       }
-/*      .recognition-view > .v-expand > .v-slot ,
-      .insights-view > .v-expand > .v-slot {*/
       .v-horizontallayout-two-columns > .v-expand > .v-slot {
         width: 100% !important;
         margin-left: -6px !important;
@@ -288,7 +275,7 @@
             display:none;
         }
     }
-    @include width-range(640,1100){
+    @include width-range(800,1100){
         .v-horizontallayout-two-columns .v-tabsheet-tabitem .v-captiontext {
             display:none;
         }
@@ -314,7 +301,7 @@
     @include valo-animate-in-slide-left;
   }
   .view-in {
-    @include valo-animate-in-slide-right($delay: 400ms);
+    @include valo-animate-in-slide-right($delay: 200ms);
   }
 
 
