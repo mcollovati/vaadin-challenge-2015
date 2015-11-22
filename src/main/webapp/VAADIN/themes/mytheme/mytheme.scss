@@ -186,6 +186,19 @@
 
   }
 
+  .recognition-view {
+    .visual-recognition-table {
+        .label-rating {
+            $label-rating-color: rgb(249, 221, 81);
+
+            color: $label-rating-color;
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+            @include valo-tappable();
+        }
+    }
+  }
+
+
   .v-ui {
     background-color: white;
 
@@ -212,9 +225,7 @@
 
 
       .main-layout {
-        padding-top: 10px;
-        padding-left: 10px;
-        padding-right: 10px;
+        padding: 10px;
       }
 
        .v-panel-content-content-layout > .v-layout {
@@ -233,6 +244,8 @@
         }
       }
 
+
+/*
       .recognition-view .results {
         .v-expand {
             padding-left: 0px !important;
@@ -242,9 +255,15 @@
           display: block !important;
           margin-left: 0px !important;
         }
-      }
 
-      .insights-view > .v-expand > .v-slot {
+      }
+*/
+      .v-horizontallayout-two-columns > .v-expand > .v-spacing {
+        display: block;
+      }
+/*      .recognition-view > .v-expand > .v-slot ,
+      .insights-view > .v-expand > .v-slot {*/
+      .v-horizontallayout-two-columns > .v-expand > .v-slot {
         width: 100% !important;
         margin-left: -6px !important;
       }
@@ -252,6 +271,7 @@
   }
 
     @include width-range(0,360){
+
       .insights-view .gallery-image {
         width: 47% !important;
         &:nth-child(odd) {

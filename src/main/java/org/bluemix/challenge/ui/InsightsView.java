@@ -50,7 +50,7 @@ import static java.util.stream.Collectors.toList;
  */
 @Slf4j
 @CDIView(InsightsView.VIEW_NAME)
-@ViewMenuItem(title = "Insights", icon = FontAwesome.IMAGE, order = 4)
+@ViewMenuItem(title = "Insights", icon = FontAwesome.LIST_ALT, order = 4)
 public class InsightsView extends MHorizontalLayout implements View {
 
     public static final String VIEW_NAME = "insights";
@@ -98,12 +98,6 @@ public class InsightsView extends MHorizontalLayout implements View {
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         selectedResources.clear();
         buildGallery();
-    }
-
-
-    private Component twitterInsightsPanel() {
-        tweetList.setVisible(false);
-        return new CssLayout();
     }
 
     private Component insightsPanel() {

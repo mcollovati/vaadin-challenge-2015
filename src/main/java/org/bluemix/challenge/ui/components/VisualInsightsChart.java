@@ -18,6 +18,7 @@ public class VisualInsightsChart extends CssLayout {
     private Chart chart;
 
     public VisualInsightsChart() {
+        addStyleName("visual-insights-chart");
         chart = VisualInsightsHelper.drawChart(Collections.emptyList());
         //chart.setVisible(false);
         addComponent(chart);

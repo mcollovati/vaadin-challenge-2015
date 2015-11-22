@@ -13951,6 +13951,14 @@ div.v-layout.v-horizontal.v-widget {
 	display: block;
 }
 
+.mytheme .recognition-view .visual-recognition-table .label-rating {
+	color: #f9dd51;
+	text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
+	cursor: pointer;
+}
+
 .mytheme .v-ui {
 	background-color: white;
 }
@@ -13989,17 +13997,11 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 0;
 }
 
-.mytheme .v-ui[width-range~="0-640"] .recognition-view .results .v-expand {
-	padding-left: 0px !important;
+.mytheme .v-ui[width-range~="0-640"] .v-horizontallayout-two-columns > .v-expand > .v-spacing {
+	display: block;
 }
 
-.mytheme .v-ui[width-range~="0-640"] .recognition-view .results .v-slot {
-	width: 100% !important;
-	display: block !important;
-	margin-left: 0px !important;
-}
-
-.mytheme .v-ui[width-range~="0-640"] .insights-view > .v-expand > .v-slot {
+.mytheme .v-ui[width-range~="0-640"] .v-horizontallayout-two-columns > .v-expand > .v-slot {
 	width: 100% !important;
 	margin-left: -6px !important;
 }
