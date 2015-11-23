@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.stream.Collectors.joining;
@@ -134,5 +135,7 @@ public class ServicesFacade implements Serializable {
         });
     }
 
-
+    public ManagedExecutorService getExecutor() {
+        return executor;
+    }
 }

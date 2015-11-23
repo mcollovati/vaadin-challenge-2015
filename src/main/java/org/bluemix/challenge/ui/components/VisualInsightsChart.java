@@ -20,7 +20,6 @@ public class VisualInsightsChart extends CssLayout {
     public VisualInsightsChart() {
         addStyleName("visual-insights-chart");
         chart = VisualInsightsHelper.drawChart(Collections.emptyList());
-        //chart.setVisible(false);
         addComponent(chart);
     }
 
@@ -32,11 +31,5 @@ public class VisualInsightsChart extends CssLayout {
         Chart newChart = VisualInsightsHelper.drawChart(data);
         replaceComponent(chart, chart = newChart);
         setVisible(!data.isEmpty());
-        chart.addPointClickListener(new PointClickListener() {
-            @Override
-            public void onClick(PointClickEvent event) {
-                Notification.show("Click on " + event.getCategory());
-            }
-        });
     }
 }

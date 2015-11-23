@@ -11,11 +11,16 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamVariable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.tika.Tika;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.mime.MimeTypes;
+import org.bluemix.challenge.cdi.UIAwareManagedExecutorService;
 import org.bluemix.challenge.events.UploadCompletedEvent;
 import org.bluemix.challenge.events.UploadStartedEvent;
 import org.bluemix.challenge.io.ImageResource;
@@ -28,6 +33,8 @@ import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.inject.Inject;
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -35,6 +42,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 
 import static org.fest.reflect.core.Reflection.field;
 
@@ -47,6 +55,7 @@ import static org.fest.reflect.core.Reflection.field;
 public class UploadView extends MHorizontalLayout implements View {
 
     public static final String VIEW_NAME = "upload";
+    public static final String ADD_ACTION = VIEW_NAME + "/add";
 
     @Inject
     private javax.enterprise.event.Event<UploadStartedEvent> uploadStartedEventEvent;
@@ -56,6 +65,10 @@ public class UploadView extends MHorizontalLayout implements View {
     @Inject
     private ImageStorage imageStorage;
 
+    @Resource(lookup = "java:comp/DefaultManagedExecutorService")
+    private ManagedExecutorService executor;
+
+
     private static final long MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
     private Spinner spinner;
     private final Label progressMessage = new Label("");
@@ -64,8 +77,10 @@ public class UploadView extends MHorizontalLayout implements View {
     private final UploadAndRecognize uploadAndRecognize = new UploadAndRecognize();
     private CustomUpload upload;
 
+
     @PostConstruct
     void initView() {
+        executor = UIAwareManagedExecutorService.makeUIAware(executor);
         withFullWidth().withMargin(true);
         addStyleName("two-columns upload-view");
 
@@ -164,6 +179,10 @@ public class UploadView extends MHorizontalLayout implements View {
         resetIndicators();
         uploadProgress.setVisible(false);
         upload.focus();
+
+        if ("add".equals(event.getParameters())) {
+            getUI().scrollIntoView(upload);
+        }
     }
 
 
@@ -209,7 +228,6 @@ public class UploadView extends MHorizontalLayout implements View {
 
             if (isImage) {
                 resource.ifPresent(UploadView.this::startRecognition);
-
             }
         }
 
@@ -241,14 +259,28 @@ public class UploadView extends MHorizontalLayout implements View {
         dropFilePanel.addStyleName(ValoTheme.PANEL_WELL);
 
 
+
         DragAndDropWrapper dnd = new DragAndDropWrapper(dropFilePanel);
         dnd.setDropHandler(new DropHandler() {
             @Override
             public void drop(DragAndDropEvent event) {
                 DragAndDropWrapper.WrapperTransferable tr = (DragAndDropWrapper.WrapperTransferable) event.getTransferable();
-                Arrays.stream(tr.getFiles()).forEach(h -> {
-                    h.setStreamVariable(upload.getStreamVariable());
-                });
+
+                if (tr.getFiles() == null) {
+                    progressMessage.setValue("Dropped content is not supported. Please drop an image file");
+                    progressMessage.setStyleName(ValoTheme.LABEL_FAILURE);
+                    spinner.setVisible(false);
+                } else if (tr.getFiles().length > 1) {
+                    progressMessage.setValue("Only one file at time could be uploaded");
+                    progressMessage.setStyleName(ValoTheme.LABEL_FAILURE);
+                    spinner.setVisible(false);
+                } else {
+                    Arrays.stream(tr.getFiles())
+                            .findFirst()
+                            .ifPresent(h -> {
+                                h.setStreamVariable(new StreamVariableWrapper(executor, upload.getStreamVariable()));
+                            });
+                }
             }
 
             @Override
@@ -257,5 +289,31 @@ public class UploadView extends MHorizontalLayout implements View {
             }
         });
         return dnd;
+    }
+    interface StreamVariableExclude {
+        void streamingFinished(StreamVariable.StreamingEndEvent event);
+    }
+
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    private class StreamVariableWrapper implements StreamVariable {
+
+        private final ExecutorService service;
+
+        @Delegate(excludes = StreamVariableExclude.class)
+        private final StreamVariable wrapped;
+
+        @Override
+        public void streamingFinished(StreamingEndEvent event) {
+            service.execute(() -> this.deferStreamingFinished(event));
+        }
+
+        private void deferStreamingFinished(StreamingEndEvent event) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                // Ignore
+            }
+            UI.getCurrent().access( () -> wrapped.streamingFinished(event));
+        }
     }
 }

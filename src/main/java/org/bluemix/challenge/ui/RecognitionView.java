@@ -5,6 +5,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
+import com.vaadin.server.WebBrowser;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -51,7 +52,7 @@ public class RecognitionView extends MHorizontalLayout implements View, Page.Bro
     private final Image uploadedImage = new Image();
     private final Label message = new Label();
     private final Spinner spinner = new Spinner(SpinnerType.THREE_BOUNCE);
-    private final MButton uploadImageBtn = new MButton("Upload another image", e -> getUI().getNavigator().navigateTo(UploadView.VIEW_NAME))
+    private final MButton uploadImageBtn = new MButton("Upload another image", e -> getUI().getNavigator().navigateTo(UploadView.ADD_ACTION))
             .withVisible(false)
             .withIcon(FontAwesome.ARROW_LEFT);
     //.withStyleName(ValoTheme.BUTTON_LINK);
@@ -75,7 +76,7 @@ public class RecognitionView extends MHorizontalLayout implements View, Page.Bro
         message.addStyleName(ValoTheme.LABEL_COLORED);
 
         tabSheet = new TabSheet();
-        tabSheet.addSelectedTabChangeListener( e -> {
+        tabSheet.addSelectedTabChangeListener(e -> {
             // awful workaround
             if (tabSheet.getSelectedTab() == recognitionResults) {
                 Page.getCurrent().getJavaScript().execute("setTimeout(vaadin.forceLayout, 100);");

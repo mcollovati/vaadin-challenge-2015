@@ -73,10 +73,17 @@ public class MyUI extends UI {
 
         request.getService().addSessionDestroyListener(ev -> imageStorage.destroy());
 
-        Panel contentLayout = new Panel();
+        Panel contentLayout = new Panel() {
+            @Override
+            public void setContent(Component content) {
+                super.setContent(content);
+                setScrollTop(0);
+            }
+        };
         contentLayout.setStyleName("content-layout");
         contentLayout.addStyleName(ValoTheme.LAYOUT_WELL);
         contentLayout.setSizeFull();
+
 
         //Breadcrumb breadcrumb = new Breadcrumb();
 
