@@ -13824,8 +13824,25 @@ div.v-layout.v-horizontal.v-widget {
 	margin-right: 1px;
 }
 
+.mytheme .breadcrumb-btn:not(:first-child) {
+	left: 0;
+}
+
+.mytheme .breadcrumb-btn:not(:first-child) .breadcrumb-btn-wrap > .v-icon {
+	padding-left: 10px;
+}
+
+.mytheme .breadcrumb-btn:active:after {
+	background-color: transparent;
+}
+
 .mytheme .breadcrumb-btn:focus:after {
 	box-shadow: none !important;
+}
+
+.mytheme .breadcrumb-btn-friendly + .breadcrumb-btn-spacer:after {
+	border-left-color: #2c9720 !important;
+	background-color: transparent !important;
 }
 
 .mytheme .breadcrumb-btn:not(.disabled) + .breadcrumb-btn-spacer.v-disabled {
@@ -13870,40 +13887,13 @@ div.v-layout.v-horizontal.v-widget {
 	display: inline-block !important;
 }
 
-.mytheme .breadcrumb-btn-spacer.breadcrumb-btn-friendly:before {
-	border-left: 10px solid;
-}
-
-.mytheme .breadcrumb-btn-spacer.breadcrumb-btn-friendly:after {
-	border-left: 10px solid #2c9720;
-}
-
-.mytheme .breadcrumb-btn-spacer.breadcrumb-btn-friendly:before {
-	border-left: 10px solid;
-}
-
-.mytheme .breadcrumb-btn-spacer.breadcrumb-btn-friendly:after {
-	border-left: 10px solid #2c9720;
-}
-
-.mytheme .breadcrumb-btn-spacer.breadcrumb-btn-primary:before {
-	border-left: 10px solid;
-}
-
-.mytheme .breadcrumb-btn-spacer.breadcrumb-btn-primary:after {
-	border-left: 10px solid #197de1;
-}
-
-.mytheme .breadcrumb-btn-spacer.breadcrumb-btn-friendly ~ .breadcrumb-btn ~ .breadcrumb-btn {
-	border-left-style: hidden;
-}
-
 .mytheme .breadcrumb-btn-spacer:focus:after {
 	box-shadow: none !important;
+	border-color: #fafafa;
 }
 
-.mytheme .breadcrumb-btn-spacer.breadcrumb-btn-primary.v-disabled, .mytheme .breadcrumb-btn-spacer.breadcrumb-btn-friendly.v-disabled {
-	opacity: 1 !important;
+.mytheme .breadcrumb-btn-spacer:active:after {
+	border-color: #fafafa;
 }
 
 .mytheme .tweet {
@@ -13971,11 +13961,11 @@ div.v-layout.v-horizontal.v-widget {
 	height: auto !important;
 }
 
-.mytheme .v-ui[width-range~="0-580"] .breadcrumb-btn {
+.mytheme .v-ui[width-range~="0-610"] .breadcrumb-btn {
 	min-width: auto;
 }
 
-.mytheme .v-ui[width-range~="0-580"] .breadcrumb-btn .breadcrumb-btn-caption {
+.mytheme .v-ui[width-range~="0-610"] .breadcrumb-btn .breadcrumb-btn-caption {
 	display: none;
 }
 

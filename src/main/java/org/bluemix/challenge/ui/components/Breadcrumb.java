@@ -121,51 +121,18 @@ public class Breadcrumb extends MCssLayout implements ViewChangeListener {
     private void toggleButtonsState(int currentViewIndex, ViewChangeEvent event) {
         buttons.stream().forEach( b -> {
             b.removeStyleName(ValoTheme.BUTTON_FRIENDLY);
-            findSpacer(b).ifPresent( c -> c.removeStyleName(ValoTheme.BUTTON_FRIENDLY));
         });
-
         buttons.stream().limit(currentViewIndex).forEach( b -> {
-            //b.setEnabled(true);
             b.setEnabled(permissions.get(b.getData()).test(event));
-            stylePrevious(b);
-            findSpacer(b).ifPresent(Breadcrumb::stylePrevious);
         });
         MButton current = buttons.get(currentViewIndex);
         current.setEnabled(true);
-        styleCurrent(current);
-        findSpacer(current).ifPresent(Breadcrumb::styleCurrent);
+        current.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 
         buttons.stream().skip(currentViewIndex+1).forEach(b -> {
-            //b.setEnabled(false);
             b.setEnabled(permissions.get(b.getData()).test(event));
-            if (b.isEnabled()) {
-                stylePrevious(current);
-                findSpacer(current).ifPresent(Breadcrumb::stylePrevious);
-            } else {
-                styleFollowing(b);
-                findSpacer(b).ifPresent(Breadcrumb::styleFollowing);
-            }
         });
     }
 
-    private Optional<Component> findSpacer(Component button) {
-        int cidx = getComponentIndex(button) + 1;
-        if (cidx < getComponentCount()) {
-            return Optional.of(getComponent(cidx));
-        }
-        return Optional.empty();
-    }
-    private static void stylePrevious(Component component) {
-        //component.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        //component.removeStyleName(ValoTheme.BUTTON_FRIENDLY);
-    }
-    private static void styleCurrent(Component component) {
-        component.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-        //component.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-    }
-    private static void styleFollowing(Component component) {
-        //component.removeStyleName(ValoTheme.BUTTON_FRIENDLY);
-        //component.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-    }
 
 }

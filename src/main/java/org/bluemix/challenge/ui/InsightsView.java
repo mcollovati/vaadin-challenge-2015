@@ -106,9 +106,7 @@ public class InsightsView extends MHorizontalLayout implements View {
 
         tweetList = new TweetList();
         tweetList.setVisible(false);
-        //tweetList.setHeightUndefined();
         tweetList.setWidth(100, Unit.PERCENTAGE);
-        ////tweetList.setCaption("");
         tweetList.addStyleName(ValoTheme.PANEL_BORDERLESS);
 
 
@@ -130,7 +128,6 @@ public class InsightsView extends MHorizontalLayout implements View {
                 if (action == searchTweetsAction) {
                     Set<String> tags = visualInsightsTable.getConvertedValue();
                     if (sender == visualInsightsTable && !tags.isEmpty()) {
-                        //Set<String> tags = (Set<String>) visualInsightsTable.getConvertedValue();
                         tweetList.searchStarted(tags);
                         toggleAllTabs(false);
                         serviceStarted();
@@ -144,7 +141,6 @@ public class InsightsView extends MHorizontalLayout implements View {
             public void handleAction(Object sender, Object target) {
                 Set<String> tags = visualInsightsTable.getConvertedValue();
                 if (target == visualInsightsTable && !tags.isEmpty()) {
-                    //Set<String> tags = (Set<String>) visualInsightsTable.getConvertedValue();
                     tweetList.searchStarted(tags);
                     toggleAllTabs(false);
                     serviceStarted();
@@ -154,37 +150,18 @@ public class InsightsView extends MHorizontalLayout implements View {
         });
 
 
-        insights = new TabSheet(); /* {
-
-            private Component findTabComponent(Component component) {
-                return ScrollableTargetWrapper.wrapperFor(component)
-                        .map(s -> (Component)s)
-                        .orElse(component);
-            }
-            @Override
-            public Tab getTab(Component c) {
-                return super.getTab(findTabComponent(c));
-            }
-
-            @Override
-            public void setSelectedTab(Component c) {
-                super.setSelectedTab(findTabComponent(c));
-            }
-        };*/
+        insights = new TabSheet();
         insights.setStyleName(ValoTheme.TABSHEET_CENTERED_TABS);
         insights.setWidth("100%");
 
 
 
-        //TabSheet.Tab tab = insights.addTab(new ScrollableTargetWrapper<>(visualInsightsTable), "Visual Insights");
         TabSheet.Tab tab = insights.addTab(visualInsightsTable, "Visual Insights");
         tab.setEnabled(false);
         tab.setIcon(FontAwesome.LIST_ALT);
-        //tab = insights.addTab(new ScrollableTargetWrapper<>(visualInsightsChart), "Visual Insights chart");
         tab = insights.addTab(visualInsightsChart, "Visual Insights chart");
         tab.setEnabled(false);
         tab.setIcon(FontAwesome.BAR_CHART_O);
-        //tab = insights.addTab(new ScrollableTargetWrapper<>(tweetList), "IBM Twitter Insights");
         tab = insights.addTab(tweetList, "IBM Twitter Insights");
         tab.setEnabled(false);
         tab.setIcon(FontAwesome.TWITTER_SQUARE);
@@ -214,7 +191,6 @@ public class InsightsView extends MHorizontalLayout implements View {
         toggleAllImages.setData(Boolean.FALSE);
         MHorizontalLayout buttons = new MHorizontalLayout(toggleAllImages, analyzeBtn)
                 .withMargin(false);
-        //return new MVerticalLayout(info, buttons, messageLabel, wipSpinner, gallery).withMargin(false);
         return new MVerticalLayout(info, buttons, gallery).withMargin(false).withAlign(buttons, Alignment.TOP_CENTER);
     }
 
@@ -230,8 +206,6 @@ public class InsightsView extends MHorizontalLayout implements View {
             visualInsightsTable.empty();
             tweetList.empty();
             insights.setSelectedTab(visualInsightsTable);
-            //insights.getTab(visualInsightsTable).setEnabled(false);
-            //insights.getTab(visualInsightsChart).setEnabled(false);
             toggleAllTabs(false);
         }
     }
@@ -245,9 +219,6 @@ public class InsightsView extends MHorizontalLayout implements View {
         insights.getTab(visualInsightsTable).setEnabled(true);
         insights.getTab(visualInsightsChart).setEnabled(true);
         insights.setSelectedTab(visualInsightsTable);
-        ////visualInsightsTable.focus();
-        ////ScrollableTargetWrapper.scrollTo(visualInsightsTable);
-        //getUI().scrollIntoView(messageLabel);
         getUI().scrollIntoView(insights);
 
     }
@@ -268,7 +239,6 @@ public class InsightsView extends MHorizontalLayout implements View {
         tweetList.setTweets(event.getTweets());
         toggleAllTabs(true);
         insights.setSelectedTab(tweetList);
-        //ScrollableTargetWrapper.scrollTo(tweetList);
         getUI().scrollIntoView(insights);
     }
 
@@ -315,6 +285,9 @@ public class InsightsView extends MHorizontalLayout implements View {
                 .forEach(c -> {
                     gallery.addComponent(c);
                 });
+        if (imageStorage.isEmpty()) {
+            analyzeBtn.setEnabled(false);
+        }
     }
 
     private Component galleryImage(ImageResource imageResource) {
