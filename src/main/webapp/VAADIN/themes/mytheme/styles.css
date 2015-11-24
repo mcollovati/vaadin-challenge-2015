@@ -13945,6 +13945,10 @@ div.v-layout.v-horizontal.v-widget {
 	padding-top: 10px;
 }
 
+.mytheme .two-columns .v-slot:first-child h3 {
+	margin-top: 16px;
+}
+
 .mytheme .recognition-view .visual-recognition-table .label-rating {
 	color: #f9dd51;
 	text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);

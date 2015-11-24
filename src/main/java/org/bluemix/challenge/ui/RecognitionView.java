@@ -203,10 +203,7 @@ public class RecognitionView extends MHorizontalLayout implements View, Page.Bro
         message.setValue("Upload completed. Starting visual recognition");
         message.setStyleName(ValoTheme.LABEL_SUCCESS);
         spinner.setVisible(true);
-        //getUI().scrollIntoView(uploadedImage);
-        ////ScrollableTargetWrapper.scrollTo(uploadedImage);
-        ////Scroller.current().ensureVisible(uploadedImage);
-        getUI().scrollIntoView(tabSheet);
+        ////getUI().scrollIntoView(tabSheet);
     }
 
     void doRecognition(@Observes UploadCompletedEvent eventFile) {

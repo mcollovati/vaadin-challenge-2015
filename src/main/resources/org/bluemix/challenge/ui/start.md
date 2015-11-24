@@ -1,14 +1,7 @@
-# Visual recognition sample
+### Visual recognition sample
 
-This is a sample application using Vaadin 7.5.9 and IBM BlueMix Visual recognition service.
+This is a sample application using Vaadin 7.5.9 and IBM BlueMix services.
 
-See [Visual Recognition documentation](http://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/visual-recognition.html)
-for more information.
+Upload images to understand their content without any accompanying descriptive text
+and perform visual insight extraction. 
 
-Vaadin addons:
-
-* viritin
-* vaadin-cdi
-* cdi-helpers
-
-Bluemix services:

@@ -234,6 +234,8 @@ public class UploadView extends MHorizontalLayout implements View {
         @Override
         public void uploadFailed(Upload.FailedEvent event) {
             spinner.setVisible(false);
+            resource.ifPresent(imageStorage::destroy);
+            getUI().scrollIntoView(progressMessage);
             log.warn("Upload failed", event.getReason());
         }
 

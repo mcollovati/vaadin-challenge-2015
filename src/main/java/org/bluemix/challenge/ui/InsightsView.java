@@ -42,6 +42,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 
 /**
@@ -72,6 +73,7 @@ public class InsightsView extends MHorizontalLayout implements View {
     private TabSheet insights;
     private TweetList tweetList;
     private VisualInsightsTable visualInsightsTable;
+    private MButton toggleAllImages;
 
 
     @PostConstruct
@@ -180,18 +182,22 @@ public class InsightsView extends MHorizontalLayout implements View {
         RichText info = new RichText().withMarkDown(getClass().getResourceAsStream("insights.md"));
         gallery.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
 
-        final MButton toggleAllImages = new MButton(FontAwesome.CHECK_SQUARE_O)
+        toggleAllImages = new MButton(FontAwesome.CHECK_SQUARE_O)
                 .withCaption("All/None");
         toggleAllImages.withListener(e -> {
             boolean newValue = !(boolean) toggleAllImages.getData();
             selectedResources.values().forEach(s -> s.setValue(newValue));
-            toggleAllImages.setData(newValue);
-            toggleAllImages.setIcon((newValue) ? FontAwesome.SQUARE_O : FontAwesome.CHECK_SQUARE_O);
+            onAllCardsWithSameStatus(newValue);
         }).withStyleName(ValoTheme.BUTTON_QUIET);
         toggleAllImages.setData(Boolean.FALSE);
         MHorizontalLayout buttons = new MHorizontalLayout(toggleAllImages, analyzeBtn)
                 .withMargin(false);
         return new MVerticalLayout(info, buttons, gallery).withMargin(false).withAlign(buttons, Alignment.TOP_CENTER);
+    }
+
+    private void onAllCardsWithSameStatus(boolean newValue) {
+        toggleAllImages.setData(newValue);
+        toggleAllImages.setIcon((newValue) ? FontAwesome.SQUARE_O : FontAwesome.CHECK_SQUARE_O);
     }
 
     private void startVisualInsight() {
@@ -288,6 +294,7 @@ public class InsightsView extends MHorizontalLayout implements View {
         if (imageStorage.isEmpty()) {
             analyzeBtn.setEnabled(false);
         }
+        hasAllCardSameStatus().ifPresent(InsightsView.this::onAllCardsWithSameStatus);
     }
 
     private Component galleryImage(ImageResource imageResource) {
@@ -323,10 +330,13 @@ public class InsightsView extends MHorizontalLayout implements View {
             CardStatus cs = new CardStatus();
             cs.addValueChangeListener(e -> {
                 analyzeBtn.setEnabled(hasSelectedCards());
+                hasAllCardSameStatus().ifPresent(InsightsView.this::onAllCardsWithSameStatus);
             });
             return cs;
         });
-        Property.ValueChangeListener toggleCardStatusListener = e -> card.setStyleName("selected", status.getValue());
+        Property.ValueChangeListener toggleCardStatusListener = e -> {
+            card.setStyleName("selected", status.getValue());
+        };
         status.addValueChangeListener(toggleCardStatusListener);
         card.addDetachListener( e -> status.removeValueChangeListener(toggleCardStatusListener));
 
@@ -339,6 +349,14 @@ public class InsightsView extends MHorizontalLayout implements View {
         return card;
     }
 
+    private Optional<Boolean> hasAllCardSameStatus() {
+        Set<Boolean> distinctStatus = selectedResources.values().stream().map(CardStatus::getValue)
+                .distinct().collect(toSet());
+        if (distinctStatus.size() == 1) {
+            return Optional.of(distinctStatus.iterator().next());
+        }
+        return Optional.empty();
+    }
 
     private boolean hasSelectedCards() {
         return selectedResources.values().stream().map(CardStatus::getValue)

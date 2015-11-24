@@ -181,8 +181,13 @@
 
   }
 
-  .two-columns .v-tabsheet-tabsheetpanel > .v-scrollable {
-    padding-top: 10px;
+  .two-columns {
+    .v-tabsheet-tabsheetpanel > .v-scrollable {
+        padding-top: 10px;
+    }
+    .v-slot:first-child h3 {
+        margin-top: 16px;
+    }
   }
 
   .recognition-view {
