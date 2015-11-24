@@ -6,11 +6,10 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.UI;
-
+import org.bluemix.challenge.ui.components.ExternalLinkTarget;
 import org.vaadin.cdiviewmenu.ViewMenuItem;
 import org.vaadin.viritin.button.PrimaryButton;
 import org.vaadin.viritin.label.RichText;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 /**
@@ -28,7 +27,7 @@ public class StartView extends MVerticalLayout implements View {
         addComponent(new RichText().withMarkDown(getClass().getResourceAsStream("start.md")));
         addComponent(new PrimaryButton("Start here",
                 event -> UI.getCurrent().getNavigator().navigateTo(UploadView.VIEW_NAME)));
-        addComponent(new RichText().withMarkDown(getClass().getResourceAsStream("services.md")));
+        addComponent(ExternalLinkTarget.extend(new RichText()).withMarkDown(getClass().getResourceAsStream("services.md")));
         expand(new CssLayout());
         setHeightUndefined();
 

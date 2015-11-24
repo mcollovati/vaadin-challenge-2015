@@ -21,6 +21,7 @@ import org.bluemix.challenge.events.VisualInsightsFailedEvent;
 import org.bluemix.challenge.events.VisualInsightsSuccededEvent;
 import org.bluemix.challenge.io.ImageResource;
 import org.bluemix.challenge.io.ImageStorage;
+import org.bluemix.challenge.ui.components.ExternalLinkTarget;
 import org.bluemix.challenge.ui.components.TweetList;
 import org.bluemix.challenge.ui.components.VisualInsightsChart;
 import org.bluemix.challenge.ui.components.VisualInsightsTable;
@@ -179,7 +180,7 @@ public class InsightsView extends MHorizontalLayout implements View {
     }
 
     private Layout infoPanel() {
-        RichText info = new RichText().withMarkDown(getClass().getResourceAsStream("insights.md"));
+        RichText info = ExternalLinkTarget.extend(new RichText()).withMarkDown(getClass().getResourceAsStream("insights.md"));
         gallery.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
 
         toggleAllImages = new MButton(FontAwesome.CHECK_SQUARE_O)
