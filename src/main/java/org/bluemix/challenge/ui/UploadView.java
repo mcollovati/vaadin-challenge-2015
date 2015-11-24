@@ -277,11 +277,13 @@ public class UploadView extends MHorizontalLayout implements View {
                     progressMessage.setStyleName(ValoTheme.LABEL_FAILURE);
                     spinner.setVisible(false);
                 } else {
-                    Arrays.stream(tr.getFiles())
-                            .findFirst()
-                            .ifPresent(h -> {
-                                h.setStreamVariable(new StreamVariableWrapper(executor, upload.getStreamVariable()));
-                            });
+                    Html5File file = tr.getFiles()[0];
+                    if (file.getFileSize() > MAX_UPLOAD_SIZE) {
+                        progressMessage.setValue("File exceedes max upload size. File size is " + FileUtils.byteCountToDisplaySize(file.getFileSize()));
+                        progressMessage.setStyleName(ValoTheme.LABEL_FAILURE);
+                    } else {
+                        file.setStreamVariable(new StreamVariableWrapper(executor, upload.getStreamVariable()));
+                    }
                 }
             }
 
