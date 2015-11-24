@@ -43,7 +43,7 @@ public class TweetComponent extends MVerticalLayout {
         Link authorLink = new Link("@" + actor.getPreferredUsername(),
                 new ExternalResource(actor.getLink()));
 
-        RichText body = new RichText().withMarkDown(processTweetBody(tweet.getMessage()));
+        RichText body = ExternalLinkTarget.extend(new RichText()).withMarkDown(processTweetBody(tweet.getMessage()));
         body.setStyleName("tweet-body");
         body.setWidth("100%");
         body.setHeightUndefined();
