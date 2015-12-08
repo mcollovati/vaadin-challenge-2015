@@ -71,7 +71,7 @@ public class MyUI extends UI {
     @Override
     protected void init(VaadinRequest request) {
 
-        request.getService().addSessionDestroyListener(ev -> imageStorage.destroy());
+        //request.getService().addSessionDestroyListener(ev -> imageStorage.destroy());
 
         Panel contentLayout = new Panel() {
             @Override
